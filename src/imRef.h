@@ -3,11 +3,20 @@
 
 class imDataRef {
 public:
-    inline imDataRef();
-    inline virtual ~imDataRef();
+    imDataRef() : m_refs(1)
+    { }
 
-    inline void addRef();
-    inline void delRef();
+    virtual ~imDataRef()
+    { }
+
+    void addRef()
+    { ++m_refs; }
+
+    void delRef()
+    {
+        if (--m_refs == 0)
+            delete this;
+    }
 
 private:
     unsigned long m_refs;
@@ -79,23 +88,5 @@ public:
 private:
     _R* m_ref;
 };
-
-
-/* imDataRef inlines */
-imDataRef::imDataRef()
-         : m_refs(1)
-{ }
-
-imDataRef::~imDataRef()
-{ }
-
-void imDataRef::addRef()
-{ ++m_refs; }
-
-void imDataRef::delRef()
-{
-    if (--m_refs == 0)
-        delete this;
-}
 
 #endif

@@ -103,6 +103,16 @@ std::list<imRef<imVfsEntry> > imVfsDirEntry::children() const
     return childList;
 }
 
+imRef<imVfsEntry> imVfsDirEntry::get(imString name) const
+{
+    name = name.toLower();
+    std::map<imString, imRef<imVfsEntry> >::const_iterator f;
+    f = m_children.find(name);
+    if (f == m_children.end())
+        return 0;
+    return f->second;
+}
+
 void imVfsDirEntry::add(const std::list<imRef<imVfsEntry> >& children)
 {
     std::list<imRef<imVfsEntry> >::const_iterator it;
@@ -206,7 +216,7 @@ imStream* imVfs::open(imString path)
         size_t split = path.find('/');
         if (split == (size_t)-1) {
             // Last path item, this should be what we want
-            imVfsFileEntry* entry = dir->get(path).cast<imVfsFileEntry>();
+            imRef<imVfsFileEntry> entry = dir->get(path).convert<imVfsFileEntry>();
             if (entry == 0)
                 return 0;
 
@@ -242,7 +252,7 @@ imStream* imVfs::open(imString path)
             // Directory along our way
             imString subdir = path.left(split);
             path = path.mid(split + 1);
-            dir = dir->get(subdir).cast<imVfsDirEntry>();
+            dir = dir->get(subdir).convert<imVfsDirEntry>();
         }
     } while (!path.isEmpty());
     return 0;

@@ -1,6 +1,6 @@
 CXX = g++
-CXXFLAGS = -g -Wall
-LIBS = -lz
+CXXFLAGS = -g -Wall -ISDL
+LIBS = -lz -lSDL
 
 OBJFILES = \
 	out/imString.o \
