@@ -19,7 +19,7 @@
     static imVfsEntry* find_files(imString path)
     {
         WIN32_FIND_DATAA fd;
-        HANDLE hList = FindFirstFileA(path.cstr(), &fd);
+        HANDLE hList = FindFirstFileA(path.data(), &fd);
         if (hList == 0)
             return 0;
 
@@ -27,7 +27,7 @@
         do {
             if (strcmp(fd.cFileName, ".") == 0 || strcmp(fd.cFileName, "..") == 0)
                 continue;
-            if ((fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECOTRY) != 0) {
+            if ((fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) != 0) {
                 // Add an imVfsDirEntry
                 children.push_back(find_files(path + "\\" + fd.cFileName));
             } else {
@@ -37,7 +37,7 @@
                                        fd.nFileSizeLow, path + "\\" + fd.cFileName)
                 );
             }
-        } while (FindNextFile(hList, &fd));
+        } while (FindNextFileA(hList, &fd));
         FindClose(hList);
         return new imVfsDirEntry(path_filename(path), children);
     }
