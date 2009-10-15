@@ -2,7 +2,6 @@
 #define _IM_STREAM_H
 
 #include "../imString.h"
-#include <cstdio>
 
 #define STREAM_READ_BASIC(type, func) \
     type func() \
@@ -31,6 +30,8 @@ public:
     STREAM_READ_BASIC(unsigned int, read32)
     STREAM_READ_BASIC(float, readFloat)
     STREAM_READ_BASIC(double, readDouble)
+
+    imString readString(size_t length);
     imString readZString();
 
     STREAM_WRITE_BASIC(unsigned char, writeByte)
@@ -38,7 +39,17 @@ public:
     STREAM_WRITE_BASIC(unsigned int, write32)
     STREAM_WRITE_BASIC(float, writeFloat)
     STREAM_WRITE_BASIC(double, writeDouble)
-    void writeZString(imString str);
+
+    void writeString(imString str)
+    {
+        write(str.data(), str.length());
+    }
+
+    void writeZString(imString str)
+    {
+        write(str.data(), str.length());
+        writeByte(0);
+    }
 
     virtual size_t read(void* buffer, size_t count) = 0;
     virtual size_t write(const void* buffer, size_t count) = 0;

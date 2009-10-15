@@ -1,7 +1,10 @@
 #ifndef _IM_STRING_H
 #define _IM_STRING_H
 
-#include "imCommon.h"
+#include <cstdarg>
+#include <cstdlib>
+#include <cstdio>
+#include "imRef.h"
 
 class imString {
 public:
@@ -90,6 +93,9 @@ public:
 
     imString toLower() const;
     imString toUpper() const;
+
+    static imString Format(const char* fmt, ...);
+    static imString FormatV(const char* fmt, va_list args);
 
 private:
     class _ref : public imDataRef {

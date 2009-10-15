@@ -1,12 +1,14 @@
 #include "imVfs.h"
+#include "../imCommon.h"
 #include <zlib.h>
 #include <cstring>
-#include <cstdio>
 
-// Cross-Platform magic for listing filesystem files
+// Cross-Platform filesystem stuff
 #ifdef WIN32
 
     #include <windows.h>
+    #include <sys/types.h>
+    #include <sys/stat.h>
 
     imString path_filename(imString path)
     {
@@ -14,6 +16,20 @@
         if (split == (size_t)-1)
             return path;
         return path.mid(split + 1);
+    }
+
+    imString path_pathname(imString path)
+    {
+        size_t split = path.r_find('\\');
+        if (split == (size_t)-1)
+            return "";
+        return path.left(split);
+    }
+
+    bool file_exists(imString path)
+    {
+        struct _stat stbuf;
+        return _stat(path.data(), &stbuf) == 0;
     }
 
     static imVfsEntry* find_files(imString path)
@@ -55,6 +71,20 @@
         if (split == (size_t)-1)
             return path;
         return path.mid(split + 1);
+    }
+
+    imString path_pathname(imString path)
+    {
+        size_t split = path.r_find('/');
+        if (split == (size_t)-1)
+            return "";
+        return path.left(split);
+    }
+
+    bool file_exists(imString path)
+    {
+        struct stat stbuf;
+        return stat(path.data(), &stbuf) == 0;
     }
 
     static imVfsEntry* find_files(imString path)
@@ -128,7 +158,7 @@ void imVfsDirEntry::add(const std::list<imRef<imVfsEntry> >& children)
                 it->cast<imVfsDirEntry>()->children()
             );
         } else {
-            fprintf(stderr, "WARN: Duplicate VFS entry '%s'\n", ipath.data());
+            imLog("WARN: Duplicate VFS entry '%s'", ipath.data());
             m_children[ipath] = *it;
         }
     }

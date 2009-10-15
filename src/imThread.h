@@ -27,23 +27,24 @@ public:
 
 private:
     SDL_mutex* m_mutex;
+    friend class imLocker;
 };
 
 
 class imLocker {
 public:
-    imLocker(imMutex* mutex) : m_mutex(mutex->m_mutex);
-    {
-        SDL_LockMutex(m_mutex);
-    }
+    imLocker(imMutex& mutex) : m_mutex(mutex)
+    { m_mutex.lock(); }
 
     ~imLocker()
-    {
-        SDL_UnlockMutex(m_mutex);
-    }
+    { m_mutex.unlock(); }
 
 private:
-    SDL_mutex* m_mutex;
+    imMutex& m_mutex;
 };
+
+#define LOCK_FUNCTION \
+    static imMutex _mutex_lock; \
+    imLocker _function_locker(_mutex_lock);
 
 #endif

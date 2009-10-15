@@ -162,6 +162,22 @@ imString imString::toUpper() const
     return data;
 }
 
+imString imString::Format(const char* fmt, ...)
+{
+    va_list args;
+    va_start(args, fmt);
+    imString str = FormatV(fmt, args);
+    va_end(args);
+    return str;
+}
+
+imString imString::FormatV(const char* fmt, va_list args)
+{
+    char buf[4096];
+    vsnprintf(buf, 4096, fmt, args);
+    return buf;
+}
+
 
 /* imString _ref */
 imString::_ref::_ref(const char* data, size_t length)

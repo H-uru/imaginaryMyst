@@ -81,7 +81,8 @@ public:
     imRef<_T> convert() const
     {
         imRef<_T> cref((_T*)m_ref);
-        cref->addRef();
+        if (m_ref != 0)
+            m_ref->addRef();
         return cref;
     }
 

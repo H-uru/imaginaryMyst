@@ -1,7 +1,6 @@
 #ifndef _IM_VFS_H
 #define _IM_VFS_H
 
-#include "../imString.h"
 #include "imStream.h"
 #include <map>
 #include <list>
@@ -130,6 +129,16 @@ public:
 
     imStream* open(imString path);
 
+    imStream* openSdb(unsigned int node)
+    {
+        return open(imString::Format("/sdb/%u.vdb", node));
+    }
+
+    imStream* openMdb(unsigned int node)
+    {
+        return open(imString::Format("/mdb/%u.vdb", node));
+    }
+
 private:
     imRef<imVfsDirEntry> m_root;
     std::map<imString, imStream*> m_dniStreams;
@@ -137,6 +146,9 @@ private:
 
 
 imString path_filename(imString path);
+imString path_pathname(imString path);
+bool file_exists(imString path);
+
 imVfsEntry* read_dnifile(imStream* stream, imString location);
 
 #endif

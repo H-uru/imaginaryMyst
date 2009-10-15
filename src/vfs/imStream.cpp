@@ -34,6 +34,15 @@ struct zstring_buffer {
     }
 };
 
+imString imStream::readString(size_t length)
+{
+    char* buffer = new char[length];
+    read(buffer, length);
+    imString str(buffer, length);
+    delete[] buffer;
+    return str;
+}
+
 imString imStream::readZString()
 {
     zstring_buffer strbuf;
@@ -41,12 +50,6 @@ imString imStream::readZString()
     while (!eof() && ((ch = readByte()) != 0))
         strbuf.append(ch);
     return imString(strbuf.m_buf, strbuf.m_size);
-}
-
-void imStream::writeZString(imString str)
-{
-    write(str.data(), str.length());
-    writeByte(0);
 }
 
 

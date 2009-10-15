@@ -1,50 +1,74 @@
-#include "vfs/imVfs.h"
-#include <cstdio>
+#include <SDL.h>
+#include "imCommon.h"
+#include "scene/imSceneDatabase.h"
 
-void hex_dump(imStream* S)
+#ifdef WIN32
+#  include <windows.h>
+#  include <direct.h>
+#endif
+
+imString s_rootPath;
+imVfs s_vfs;
+
+#ifdef WIN32
+  int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
+                     LPSTR lpCmdLine, int nCmdShow)
+#else
+  int main(int argc, char* argv[])
+#endif
 {
-    int count = 0;
-    while (!S->eof() && count < 64) {
-        unsigned char ch = S->readByte();
-        printf("%02X ", ch);
-        if ((++count % 16) == 0)
-            printf("\n");
-        else if ((count % 8) == 0)
-            printf(" ");
-    }
-    printf("\n");
-}
+    /* Initialize SDL */
+    SDL_Init(SDL_INIT_AUDIO | SDL_INIT_VIDEO);
 
-int main(int argc, char* argv[])
-{
-    imVfs vfs;
-    fprintf(stderr, "Indexing Local Resources... ");
-    vfs.addPhysicalPath("/media/Shared/Games/realMYST");
-    vfs.addDniFile("/media/Shared/Games/realMYST/sho.dni");
-    vfs.addDniFile("/media/Shared/Games/realMYST/mara.dni");
-    vfs.addDniFile("/media/Shared/Games/realMYST/pera.dni");
-    fprintf(stderr, "Done!\n");
+#ifdef WIN32
+    s_logFile = fopen("imaginaryMyst.log", "wb");
 
-    imStream* S = vfs.open("/SHO.dni");
-    if (S != 0) {
-        printf("[sho.dni]\n");
-        hex_dump(S);
-        delete S;
-    }
+    char pathbuf[MAX_PATH];
+    s_rootPath = _getcwd(pathbuf, MAX_PATH);
+#else
+    s_logFile = stderr;
+    s_rootPath = path_pathname(argv[0]);
+#endif
 
-    S = vfs.open("/wav/atrus ee sound.wav");
-    if (S != 0) {
-        printf("[Atrus EE Sound.wav]\n");
-        hex_dump(S);
-        delete S;
-    }
+    imLog("Indexing Local Resources... ");
 
-    S = vfs.open("/BEH/fish.beh");
-    if (S != 0) {
-        printf("[fish.beh]\n");
-        hex_dump(S);
-        delete S;
+    if (!file_exists(s_rootPath + "/sho.dni")) {
+        imLog("Fatal: Cannot read sho.dni!");
+        return 1;
     }
+    s_vfs.addDniFile(s_rootPath + "/sho.dni");
+
+    if (!file_exists(s_rootPath + "/mara.dni")) {
+        imLog("Fatal: Cannot read mara.dni!");
+        return 1;
+    }
+    s_vfs.addDniFile(s_rootPath + "/mara.dni");
+
+    if (!file_exists(s_rootPath + "/pera.dni")) {
+        imLog("Fatal: Cannot read pera.dni!");
+        return 1;
+    }
+    s_vfs.addDniFile(s_rootPath + "/pera.dni");
+
+    // Add the game dir last, so duplicates use the physical copy
+    s_vfs.addPhysicalPath(s_rootPath);
+
+    imLog("Reading Scene Database...");
+    imSceneDatabase sdb;
+    imStream* stream = s_vfs.open("/scn/myst.idx");
+    if (stream == 0) {
+        imLog("Fatal: Cannot open Scene Database!");
+        return 1;
+    }
+    sdb.readIndex(stream);
+    delete stream;
+
+    // Create a window for the game
+    SDL_Surface* window = SDL_SetVideoMode(640, 480, 32, SDL_HWSURFACE | SDL_DOUBLEBUF);
+    SDL_Delay(1000);
+    SDL_FreeSurface(window);
+
+    SDL_Quit();
 
     return 0;
 }

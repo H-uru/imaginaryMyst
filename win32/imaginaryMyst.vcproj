@@ -63,7 +63,7 @@
 				AdditionalDependencies="zlib1.lib SDL.lib"
 				LinkIncremental="2"
 				GenerateDebugInformation="true"
-				SubSystem="1"
+				SubSystem="2"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -136,7 +136,7 @@
 				AdditionalDependencies="zlib1.lib SDL.lib"
 				LinkIncremental="1"
 				GenerateDebugInformation="true"
-				SubSystem="3"
+				SubSystem="2"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
 				TargetMachine="1"
@@ -172,6 +172,10 @@
 			>
 			<File
 				RelativePath="..\src\imCommon.h"
+				>
+			</File>
+			<File
+				RelativePath="..\src\imLog.cpp"
 				>
 			</File>
 			<File
@@ -215,6 +219,18 @@
 				</File>
 				<File
 					RelativePath="..\src\vfs\imVfs.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="scene"
+				>
+				<File
+					RelativePath="..\src\scene\imSceneDatabase.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\src\scene\imSceneDatabase.h"
 					>
 				</File>
 			</Filter>
