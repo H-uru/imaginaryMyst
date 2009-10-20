@@ -60,7 +60,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="zlib1.lib SDL.lib"
+				AdditionalDependencies="zlib1.lib SDL.lib opengl32.lib glu32.lib"
 				LinkIncremental="2"
 				GenerateDebugInformation="true"
 				SubSystem="2"
@@ -133,7 +133,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="zlib1.lib SDL.lib"
+				AdditionalDependencies="zlib1.lib SDL.lib opengl32.lib glu32.lib"
 				LinkIncremental="1"
 				GenerateDebugInformation="true"
 				SubSystem="2"
@@ -231,6 +231,18 @@
 				</File>
 				<File
 					RelativePath="..\src\scene\imSceneDatabase.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="surface"
+				>
+				<File
+					RelativePath="..\src\surface\imMipmap.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\src\surface\imMipmap.h"
 					>
 				</File>
 			</Filter>

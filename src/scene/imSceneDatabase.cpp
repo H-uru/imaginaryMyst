@@ -1,6 +1,7 @@
 #include "imSceneDatabase.h"
 #include "../imCommon.h"
 
+/* imObjectDatabase */
 bool imObjectDatabase::readIndex(imStream* stream)
 {
     size_t count = stream->read32();
@@ -17,10 +18,20 @@ bool imObjectDatabase::readIndex(imStream* stream)
     return true;
 }
 
+std::vector<unsigned int> imObjectDatabase::get(imString name) const
+{
+    std::map<imString, std::vector<unsigned int> >::const_iterator f =
+        m_objects.find(name);
+    if (f == m_objects.end())
+        return std::vector<unsigned int>();
+    return f->second;
+}
 
+
+/* imSceneDatabase */
 bool imSceneDatabase::readIndex(imStream* stream)
 {
-    if (stream->read32() != 0x03000000) {
+    if (stream->read32BE() != 3) {
         imLog("Fatal: Invalid Scene Database!\n");
         return false;
     }

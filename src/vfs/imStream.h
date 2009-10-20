@@ -31,6 +31,13 @@ public:
     STREAM_READ_BASIC(float, readFloat)
     STREAM_READ_BASIC(double, readDouble)
 
+    unsigned int read32BE()
+    {
+        unsigned int v = read32();
+        return ((v & 0x000000FF) << 24) | ((v & 0x0000FF00) << 8)
+             | ((v & 0xFF000000) >> 24) | ((v & 0x00FF0000) >> 8);
+    }
+
     imString readString(size_t length);
     imString readZString();
 
@@ -39,6 +46,13 @@ public:
     STREAM_WRITE_BASIC(unsigned int, write32)
     STREAM_WRITE_BASIC(float, writeFloat)
     STREAM_WRITE_BASIC(double, writeDouble)
+
+    void write32BE(unsigned int v)
+    {
+        v = ((v & 0x000000FF) << 24) | ((v & 0x0000FF00) << 8)
+          | ((v & 0xFF000000) >> 24) | ((v & 0x00FF0000) >> 8);
+        write32(v);
+    }
 
     void writeString(imString str)
     {

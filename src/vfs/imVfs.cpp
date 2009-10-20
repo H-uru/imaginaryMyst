@@ -234,7 +234,7 @@ void imVfs::debug_print()
 
 imStream* imVfs::open(imString path)
 {
-    if (!path[0] == '/')
+    if (!(path[0] == '/'))
         return 0;
     path = path.mid(1);
 

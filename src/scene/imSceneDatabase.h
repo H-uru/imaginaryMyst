@@ -14,6 +14,7 @@ public:
     { }
 
     bool readIndex(imStream* stream);
+    std::vector<unsigned int> get(imString name) const;
 
 private:
     std::map<imString, std::vector<unsigned int> > m_objects;
@@ -28,6 +29,15 @@ public:
     { }
 
     bool readIndex(imStream* stream);
+
+    std::vector<unsigned int> saveGroup(imString name)
+    { return m_saveGroups.get(name); }
+
+    std::vector<unsigned int> room(imString name)
+    { return m_rooms.get(name); }
+
+    std::vector<unsigned int> namedGroup(imString name)
+    { return m_namedGroups.get(name); }
 
 private:
     imObjectDatabase m_saveGroups;
