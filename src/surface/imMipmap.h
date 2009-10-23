@@ -22,7 +22,7 @@ public:
     ~imMipmap();
 
     void read(imStream* stream);
-    void upload();
+    void prepare();
 
     void bind()
     {

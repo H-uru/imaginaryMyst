@@ -175,6 +175,22 @@
 				>
 			</File>
 			<File
+				RelativePath="..\src\imGeometry3.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\src\imGeometry3.h"
+				>
+			</File>
+			<File
+				RelativePath="..\src\imKeyList.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\src\imKeyList.h"
+				>
+			</File>
+			<File
 				RelativePath="..\src\imLog.cpp"
 				>
 			</File>
@@ -233,16 +249,92 @@
 					RelativePath="..\src\scene\imSceneDatabase.h"
 					>
 				</File>
+				<File
+					RelativePath="..\src\scene\imSceneIndex.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\src\scene\imSceneIndex.h"
+					>
+				</File>
 			</Filter>
 			<Filter
 				Name="surface"
 				>
+				<File
+					RelativePath="..\src\surface\imAnimLayer.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\src\surface\imAnimLayer.h"
+					>
+				</File>
+				<File
+					RelativePath="..\src\surface\imLayer.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\src\surface\imLayer.h"
+					>
+				</File>
+				<File
+					RelativePath="..\src\surface\imMaterial.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\src\surface\imMaterial.h"
+					>
+				</File>
 				<File
 					RelativePath="..\src\surface\imMipmap.cpp"
 					>
 				</File>
 				<File
 					RelativePath="..\src\surface\imMipmap.h"
+					>
+				</File>
+				<File
+					RelativePath="..\src\surface\imTexture.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\src\surface\imTexture.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="anim"
+				>
+				<File
+					RelativePath="..\src\anim\imAnimBehavior.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\src\anim\imAnimBehavior.h"
+					>
+				</File>
+				<File
+					RelativePath="..\src\anim\imController.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\src\anim\imController.h"
+					>
+				</File>
+				<File
+					RelativePath="..\src\anim\imKeyFrame.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\src\anim\imKeyFrame.h"
+					>
+				</File>
+				<File
+					RelativePath="..\src\anim\imLeafController.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\src\anim\imLeafController.h"
 					>
 				</File>
 			</Filter>

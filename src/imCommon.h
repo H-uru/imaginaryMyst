@@ -14,6 +14,6 @@ extern FILE* s_logFile;
 extern SDL_Surface* s_display;
 
 /* OpenGL Extensions */
-extern PFNGLCOMPRESSEDTEXIMAGE2DARBPROC glCompressedTexImage2D_EXT;
+extern PFNGLCOMPRESSEDTEXIMAGE2DARBPROC GLX_CompressedTexImage2D;
 
 #endif

@@ -1,5 +1,6 @@
 #include "imCommon.h"
 #include "scene/imSceneDatabase.h"
+#include "scene/imSceneIndex.h"
 #include "surface/imMipmap.h"
 
 #ifdef WIN32
@@ -11,7 +12,7 @@ imString s_rootPath;
 imVfs s_vfs;
 SDL_Surface* s_display;
 
-PFNGLCOMPRESSEDTEXIMAGE2DARBPROC glCompressedTexImage2D_EXT = 0;
+PFNGLCOMPRESSEDTEXIMAGE2DARBPROC GLX_CompressedTexImage2D = 0;
 
 #ifdef WIN32
   int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
@@ -77,10 +78,15 @@ PFNGLCOMPRESSEDTEXIMAGE2DARBPROC glCompressedTexImage2D_EXT = 0;
     for (k = roomKeys.begin(); k != roomKeys.end(); ++k) {
         stream = s_vfs.openSdb(*k);
         if (stream == 0) {
-            imLog("Error reading SDB %d", *k);
+            imLog("Error opening SDB %d", *k);
             continue;
         }
-        imLog("Loaded SDB %d", *k);
+        imLog("DEBUG: Reading SDB %d...", *k);
+        imSceneIndex scn;
+        if (!scn.read(stream)) {
+            imLog("Error reading SDB %d", *k);
+            imLog("But we got to %08X", stream->tell());
+        }
         delete stream;
     }
 
@@ -101,7 +107,7 @@ PFNGLCOMPRESSEDTEXIMAGE2DARBPROC glCompressedTexImage2D_EXT = 0;
     }
     */
 
-    glCompressedTexImage2D_EXT = (PFNGLCOMPRESSEDTEXIMAGE2DARBPROC)
+    GLX_CompressedTexImage2D = (PFNGLCOMPRESSEDTEXIMAGE2DARBPROC)
         SDL_GL_GetProcAddress("glCompressedTexImage2DARB");
 
     glShadeModel(GL_SMOOTH);
@@ -117,16 +123,17 @@ PFNGLCOMPRESSEDTEXIMAGE2DARBPROC glCompressedTexImage2D_EXT = 0;
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
 
+    imLog("DEBUG: Reading CreditsScene03Top.hsm...");
     imMipmap img;
     stream = s_vfs.open("/scn/maps/CreditsScene03Top.hsm");
     if (stream != 0) {
         img.read(stream);
         delete stream;
-        img.upload();
+        img.prepare();
     } else {
         imLog("Error reading HSM file");
     }
-    img.TEST_ExportDDS("test.dds");
+    //img.TEST_ExportDDS("test.dds");
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glTranslatef(0.0f, 0.0f, -4.0f);

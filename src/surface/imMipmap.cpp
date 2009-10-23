@@ -41,7 +41,7 @@ void imMipmap::read(imStream* stream)
     stream->read(m_buffer, m_totalSize);
 }
 
-void imMipmap::upload()
+void imMipmap::prepare()
 {
     if (m_texId != 0xFFFFFFFF)
         glDeleteTextures(1, &m_texId);
@@ -72,9 +72,9 @@ void imMipmap::upload()
 #endif
 
     for (size_t i=0; i<m_levels.size(); i++) {
-        imLog("Decompressing Level %u: %dx%d (0x%08x bytes) at 0x%08x",
-              i, m_levels[i].m_width, m_levels[i].m_height, m_levels[i].m_size,
-              m_levels[i].m_offset);
+        //imLog("Decompressing Level %u: %dx%d (0x%08x bytes) at 0x%08x",
+        //      i, m_levels[i].m_width, m_levels[i].m_height, m_levels[i].m_size,
+        //      m_levels[i].m_offset);
 #ifdef NO_DXT_COMPRESSION
         size_t fullsize = m_levels[i].m_width * m_levels[i].m_height * 4;
         squish::u8* buffer = new squish::u8[fullsize];
@@ -84,9 +84,9 @@ void imMipmap::upload()
                      m_levels[i].m_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, buffer);
         delete[] buffer;
 #else
-        glCompressedTexImage2D_EXT(GL_TEXTURE_2D, i, dxLevel, m_levels[i].m_width,
-                                   m_levels[i].m_height, 0, m_levels[i].m_size,
-                                   m_buffer + m_levels[i].m_offset);
+        GLX_CompressedTexImage2D(GL_TEXTURE_2D, i, dxLevel, m_levels[i].m_width,
+                                 m_levels[i].m_height, 0, m_levels[i].m_size,
+                                 m_buffer + m_levels[i].m_offset);
 #endif
     }
 }
