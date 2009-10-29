@@ -41,6 +41,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
+				AdditionalIncludeDirectories="$(SolutionDir)/libsquish"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -115,6 +116,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
+				AdditionalIncludeDirectories="$(SolutionDir)/libsquish"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
@@ -242,6 +244,14 @@
 				Name="scene"
 				>
 				<File
+					RelativePath="..\src\scene\imEnvironment.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\src\scene\imEnvironment.h"
+					>
+				</File>
+				<File
 					RelativePath="..\src\scene\imSceneDatabase.cpp"
 					>
 				</File>
@@ -335,6 +345,18 @@
 				</File>
 				<File
 					RelativePath="..\src\anim\imLeafController.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="sound"
+				>
+				<File
+					RelativePath="..\src\sound\imSoundSource.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\src\sound\imSoundSource.h"
 					>
 				</File>
 			</Filter>

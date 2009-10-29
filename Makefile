@@ -1,5 +1,5 @@
 CXX = g++
-CXXFLAGS = -g -Wall -I/usr/include/SDL -Ilibsquish -DNO_DXT_COMPRESSION
+CXXFLAGS = -g -Wall -I/usr/include/SDL -Ilibsquish
 LIBS = -lz -lSDL -lGL -lGLU -Llibsquish -lsquish
 
 OBJFILES = \
@@ -11,8 +11,10 @@ OBJFILES = \
 	out/imController.o \
 	out/imKeyFrame.o \
 	out/imLeafController.o \
+	out/imEnvironment.o \
 	out/imSceneDatabase.o \
 	out/imSceneIndex.o \
+	out/imSoundSource.o \
 	out/imAnimLayer.o \
 	out/imLayer.o \
 	out/imMaterial.o \
@@ -58,11 +60,17 @@ out/imKeyFrame.o: src/anim/imKeyFrame.h src/anim/imKeyFrame.cpp
 out/imLeafController.o: src/anim/imLeafController.h src/anim/imLeafController.cpp
 	$(CXX) $(CXXFLAGS) -c src/anim/imLeafController.cpp -o $@
 
+out/imEnvironment.o: src/scene/imEnvironment.h src/scene/imEnvironment.cpp
+	$(CXX) $(CXXFLAGS) -c src/scene/imEnvironment.cpp -o $@
+
 out/imSceneDatabase.o: src/scene/imSceneDatabase.h src/scene/imSceneDatabase.cpp
 	$(CXX) $(CXXFLAGS) -c src/scene/imSceneDatabase.cpp -o $@
 
 out/imSceneIndex.o: src/scene/imSceneIndex.h src/scene/imSceneIndex.cpp
 	$(CXX) $(CXXFLAGS) -c src/scene/imSceneIndex.cpp -o $@
+
+out/imSoundSource.o: src/sound/imSoundSource.h src/sound/imSoundSource.cpp
+	$(CXX) $(CXXFLAGS) -c src/sound/imSoundSource.cpp -o $@
 
 out/imAnimLayer.o: src/surface/imAnimLayer.h src/surface/imAnimLayer.cpp
 	$(CXX) $(CXXFLAGS) -c src/surface/imAnimLayer.cpp -o $@

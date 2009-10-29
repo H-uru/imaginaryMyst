@@ -1,7 +1,7 @@
 #include "imCommon.h"
 #include "imThread.h"
 
-FILE* s_logFile;
+FILE* s_logFile = stderr;
 
 void imLog(const char* message, ...)
 {

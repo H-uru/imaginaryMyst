@@ -64,5 +64,27 @@ bool imSceneIndex::read(imStream* stream)
             return false;
     }
 
+    if (stream->read32() != 0) {
+        imLog("DEBUG: [SDB] Environment");
+        if (!m_environment.read(stream, this))
+            return false;
+    }
+
+    if (stream->read32() != 0) {
+        imLog("Error: Vertex Pools not currently supported");
+        return false;
+    }
+
+    size_t mdbOffset = stream->read32();
+    size_t mdbCount = stream->read32();
+
+    m_sounds.resize(stream->read32());
+    for (size_t i=0; i<m_sounds.size(); i++) {
+        imLog("DEBUG: [SDB] Sound Source #%u", i);
+        m_sounds[i] = new imSoundSource();
+        if (!m_sounds[i]->read(stream))
+            return false;
+    }
+
     return true;
 }

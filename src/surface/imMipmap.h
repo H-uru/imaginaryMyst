@@ -14,6 +14,8 @@ struct imMipLevel {
 
 class imMipmap {
 public:
+    static bool s_noDXTCompression;
+
     imMipmap()
     : m_width(0), m_height(0), m_buffer(0), m_dxtType(kDXTInvalid),
       m_texId(0xFFFFFFFF)

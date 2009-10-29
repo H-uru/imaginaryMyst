@@ -67,6 +67,7 @@ public:
 
     virtual size_t read(void* buffer, size_t count) = 0;
     virtual size_t write(const void* buffer, size_t count) = 0;
+    virtual imString readLine() = 0;
 
     virtual size_t size() const = 0;
     virtual bool eof() const = 0;
@@ -95,6 +96,8 @@ public:
         // Writing to a const buffer is not supported
         return -1;
     }
+
+    virtual imString readLine();
 
     virtual size_t size() const
     { return (size_t)(m_end - m_buffer); }
@@ -148,6 +151,8 @@ public:
     {
         return fwrite(buffer, 1, count, m_file);
     }
+
+    virtual imString readLine();
 
     virtual size_t size() const
     { return m_size; }

@@ -93,6 +93,7 @@ public:
 
     imString toLower() const;
     imString toUpper() const;
+    imString strip() const;
 
     static imString Format(const char* fmt, ...);
     static imString FormatV(const char* fmt, va_list args);

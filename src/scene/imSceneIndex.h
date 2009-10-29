@@ -4,6 +4,8 @@
 #include "../imKeyList.h"
 #include "../surface/imTexture.h"
 #include "../surface/imMaterial.h"
+#include "imEnvironment.h"
+#include "../sound/imSoundSource.h"
 
 class imSceneIndex {
 public:
@@ -22,6 +24,13 @@ public:
         return 0;
     }
 
+    imRef<imMaterial> material(unsigned int id)
+    {
+        if (id < m_materials.size())
+            return m_materials[id];
+        return 0;
+    }
+
 private:
     imString m_name;
     imString m_page;
@@ -29,6 +38,8 @@ private:
     std::vector<imString> m_keyRefs;
     std::vector<imRef<imTexture> > m_textures;
     std::vector<imRef<imMaterial> > m_materials;
+    imEnvironment m_environment;
+    std::vector<imRef<imSoundSource> > m_sounds;
 };
 
 #endif

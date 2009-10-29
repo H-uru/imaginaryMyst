@@ -63,6 +63,20 @@ size_t imBufferStream::read(void* buffer, size_t count)
     return count;
 }
 
+imString imBufferStream::readLine()
+{
+    const unsigned char* lnEnd = m_ptr;
+    while (lnEnd < m_end && *lnEnd != '\r' && *lnEnd != '\n')
+        lnEnd++;
+
+    imString ln((const char*)m_ptr, lnEnd - m_ptr);
+    if (lnEnd[0] == '\r' && lnEnd < m_end && lnEnd[1] == '\n')
+        m_ptr = lnEnd + 2;  // Windows EOL
+    else
+        m_ptr = lnEnd + 1;
+    return ln;
+}
+
 
 /* imFileStream */
 bool imFileStream::open(const char* filename, const char* mode)
@@ -76,4 +90,17 @@ bool imFileStream::open(const char* filename, const char* mode)
     m_size = ftell(m_file);
     fseek(m_file, 0, SEEK_SET);
     return true;
+}
+
+imString imFileStream::readLine()
+{
+    char buf[4096];
+    memset(buf, 0, 4096);
+    fgets(buf, 4096, m_file);
+    size_t len = strlen(buf);
+    if (len > 0 && buf[len-1] == '\n')
+        len--;
+    if (len > 0 && buf[len-1] == '\r')
+        len--;
+    return imString(buf, len);
 }

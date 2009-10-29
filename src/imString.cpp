@@ -50,7 +50,7 @@ imString& imString::operator=(const char* strData)
 int imString::compare(const char* strData) const
 {
     if (m_data == 0)
-        return -(((int)strData) & 1);
+        return (strData == 0) ? 0 : -1;
     if (strData == 0)
         return 1;
     return strcmp(m_data->m_data, strData);
@@ -59,7 +59,7 @@ int imString::compare(const char* strData) const
 int imString::compare(const imString& ref) const
 {
     if (m_data == 0)
-        return -(((int)ref.m_data) & 1);
+        return (ref.m_data == 0) ? 0 : -1;
     if (ref.m_data == 0)
         return 1;
     return strcmp(m_data->m_data, ref.m_data->m_data);
@@ -160,6 +160,20 @@ imString imString::toUpper() const
         *dp++ = toupper(*cp++);
     *dp = 0;
     return data;
+}
+
+imString imString::strip() const
+{
+    if (m_data == 0)
+        return imString();
+
+    char* lp = m_data->m_data;
+    char* rp = m_data->m_data + m_data->m_length;
+    while ((lp < rp) && (*lp == ' ' || *lp == '\t'))
+        lp++;
+    do  rp--;
+    while ((rp >= lp) && (*rp == ' ' || *rp == '\t'));
+    return imString(lp, rp - lp + 1);
 }
 
 imString imString::Format(const char* fmt, ...)

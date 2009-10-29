@@ -1,8 +1,7 @@
 #include "imMipmap.h"
+#include <squish.h>
 
-#ifdef NO_DXT_COMPRESSION
-#  include <squish.h>
-#endif
+bool imMipmap::s_noDXTCompression = false;
 
 imMipmap::~imMipmap()
 {
@@ -53,41 +52,40 @@ void imMipmap::prepare()
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-#ifdef NO_DXT_COMPRESSION
-    int squishtype = 0;
-    if (m_dxtType == kDXT1)
-        squishtype = squish::kDxt1;
-    else if (m_dxtType == kDXT3)
-        squishtype = squish::kDxt3;
-    else if (m_dxtType == kDXT5)
-        squishtype = squish::kDxt5;
-#else
-    GLuint dxLevel = 0;
-    if (m_dxtType == kDXT1)
-        dxLevel = GL_COMPRESSED_RGBA_S3TC_DXT1_EXT;
-    else if (m_dxtType == kDXT3)
-        dxLevel = GL_COMPRESSED_RGBA_S3TC_DXT3_EXT;
-    else if (m_dxtType == kDXT5)
-        dxLevel = GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
-#endif
+    unsigned int dxtLevel = 0;
+    if (s_noDXTCompression) {
+        if (m_dxtType == kDXT1)
+            dxtLevel = squish::kDxt1;
+        else if (m_dxtType == kDXT3)
+            dxtLevel = squish::kDxt3;
+        else if (m_dxtType == kDXT5)
+            dxtLevel = squish::kDxt5;
+    } else {
+        if (m_dxtType == kDXT1)
+            dxtLevel = GL_COMPRESSED_RGBA_S3TC_DXT1_EXT;
+        else if (m_dxtType == kDXT3)
+            dxtLevel = GL_COMPRESSED_RGBA_S3TC_DXT3_EXT;
+        else if (m_dxtType == kDXT5)
+            dxtLevel = GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
+    }
 
     for (size_t i=0; i<m_levels.size(); i++) {
         //imLog("Decompressing Level %u: %dx%d (0x%08x bytes) at 0x%08x",
         //      i, m_levels[i].m_width, m_levels[i].m_height, m_levels[i].m_size,
         //      m_levels[i].m_offset);
-#ifdef NO_DXT_COMPRESSION
-        size_t fullsize = m_levels[i].m_width * m_levels[i].m_height * 4;
-        squish::u8* buffer = new squish::u8[fullsize];
-        squish::DecompressImage(buffer, m_levels[i].m_width, m_levels[i].m_height,
-                                m_buffer + m_levels[i].m_offset, squishtype);
-        glTexImage2D(GL_TEXTURE_2D, i, GL_RGBA, m_levels[i].m_width,
-                     m_levels[i].m_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, buffer);
-        delete[] buffer;
-#else
-        GLX_CompressedTexImage2D(GL_TEXTURE_2D, i, dxLevel, m_levels[i].m_width,
-                                 m_levels[i].m_height, 0, m_levels[i].m_size,
-                                 m_buffer + m_levels[i].m_offset);
-#endif
+        if (s_noDXTCompression) {
+            size_t fullsize = m_levels[i].m_width * m_levels[i].m_height * 4;
+            squish::u8* buffer = new squish::u8[fullsize];
+            squish::DecompressImage(buffer, m_levels[i].m_width, m_levels[i].m_height,
+                                    m_buffer + m_levels[i].m_offset, dxtLevel);
+            glTexImage2D(GL_TEXTURE_2D, i, GL_RGBA, m_levels[i].m_width,
+                        m_levels[i].m_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, buffer);
+            delete[] buffer;
+        } else {
+            GLX_CompressedTexImage2D(GL_TEXTURE_2D, i, dxtLevel, m_levels[i].m_width,
+                                     m_levels[i].m_height, 0, m_levels[i].m_size,
+                                     m_buffer + m_levels[i].m_offset);
+        }
     }
 }
 
