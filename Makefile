@@ -34,7 +34,7 @@ libsquish/libsquish.a:
 	( cd libsquish && make )
 
 bin/imaginaryMyst: $(OBJFILES) src/Main.cpp
-	$(CXX) $(CXXFLAGS) $(OBJFILES) $(LIBS) src/Main.cpp -o $@
+	$(CXX) $(CXXFLAGS) $(OBJFILES) src/Main.cpp $(LIBS) -o $@
 
 out/imGeometry3.o: src/imGeometry3.h src/imGeometry3.cpp
 	$(CXX) $(CXXFLAGS) -c src/imGeometry3.cpp -o $@
