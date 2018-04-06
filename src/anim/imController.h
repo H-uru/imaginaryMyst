@@ -17,7 +17,7 @@
 #ifndef _IM_CONTROLLER_H
 #define _IM_CONTROLLER_H
 
-#include "../vfs/imStream.h"
+#include "vfs/imStream.h"
 
 class imController {
 public:

@@ -19,7 +19,7 @@
 
 #include <map>
 #include <vector>
-#include "../vfs/imStream.h"
+#include "vfs/imStream.h"
 
 class imObjectDatabase {
 public:

@@ -17,11 +17,11 @@
 #ifndef _IM_SCENEINDEX_H
 #define _IM_SCENEINDEX_H
 
-#include "../imKeyList.h"
-#include "../surface/imTexture.h"
-#include "../surface/imMaterial.h"
+#include "imKeyList.h"
+#include "surface/imTexture.h"
+#include "surface/imMaterial.h"
 #include "imEnvironment.h"
-#include "../sound/imSoundSource.h"
+#include "sound/imSoundSource.h"
 
 class imSceneIndex {
 public:

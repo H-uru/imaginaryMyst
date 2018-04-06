@@ -17,7 +17,7 @@
 #ifndef _IM_ENVIRONMENT_H
 #define _IM_ENVIRONMENT_H
 
-#include "../surface/imMaterial.h"
+#include "surface/imMaterial.h"
 
 class imEnvironment {
 public:

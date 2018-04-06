@@ -15,8 +15,8 @@
  */
 
 #include "imAnimLayer.h"
-#include "../imCommon.h"
-#include "../scene/imSceneIndex.h"
+#include "imCommon.h"
+#include "scene/imSceneIndex.h"
 
 /* imAnimLayer */
 bool imAnimLayer::read(imStream* stream)

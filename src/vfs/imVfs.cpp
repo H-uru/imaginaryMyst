@@ -15,7 +15,7 @@
  */
 
 #include "imVfs.h"
-#include "../imCommon.h"
+#include "imCommon.h"
 #include <zlib.h>
 #include <cstring>
 

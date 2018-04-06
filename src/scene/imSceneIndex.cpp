@@ -15,7 +15,7 @@
  */
 
 #include "imSceneIndex.h"
-#include "../imCommon.h"
+#include "imCommon.h"
 
 bool imSceneIndex::read(imStream* stream)
 {

@@ -17,8 +17,8 @@
 #ifndef _IM_MIPMAP_H
 #define _IM_MIPMAP_H
 
-#include "../vfs/imStream.h"
-#include "../imCommon.h"
+#include "vfs/imStream.h"
+#include "imCommon.h"
 #include <vector>
 
 enum DXTLevel { kDXTInvalid, kDXT1, kDXT2, kDXT3, kDXT4, kDXT5 };

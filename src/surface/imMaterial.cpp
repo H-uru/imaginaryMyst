@@ -15,8 +15,8 @@
  */
 
 #include "imMaterial.h"
-#include "../imCommon.h"
-#include "../scene/imSceneIndex.h"
+#include "imCommon.h"
+#include "scene/imSceneIndex.h"
 
 imMaterial::~imMaterial()
 {
