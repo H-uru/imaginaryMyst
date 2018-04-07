@@ -30,10 +30,10 @@ public:
     { }
 
     bool readIndex(imStream* stream);
-    std::vector<unsigned int> get(imString name) const;
+    std::vector<unsigned int> get(const ST::string& name) const;
 
 private:
-    std::map<imString, std::vector<unsigned int> > m_objects;
+    std::map<ST::string, std::vector<unsigned int> > m_objects;
 };
 
 class imSceneDatabase {
@@ -46,13 +46,13 @@ public:
 
     bool readIndex(imStream* stream);
 
-    std::vector<unsigned int> saveGroup(imString name)
+    std::vector<unsigned int> saveGroup(const ST::string& name)
     { return m_saveGroups.get(name); }
 
-    std::vector<unsigned int> room(imString name)
+    std::vector<unsigned int> room(const ST::string& name)
     { return m_rooms.get(name); }
 
-    std::vector<unsigned int> namedGroup(imString name)
+    std::vector<unsigned int> namedGroup(const ST::string& name)
     { return m_namedGroups.get(name); }
 
 private:

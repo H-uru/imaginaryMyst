@@ -47,7 +47,7 @@ public:
         glBindTexture(GL_TEXTURE_2D, (GLuint)m_texId);
     }
 
-    void TEST_ExportDDS(imString filename);
+    void TEST_ExportDDS(const ST::string& filename);
 
 private:
     unsigned int m_width, m_height, m_stride;

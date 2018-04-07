@@ -15,6 +15,7 @@
  */
 
 #include "imVfs.h"
+#include "imRef.h"
 
 #define DIRT_MAGIC      0x74726944
 #define DIRT_VERSION    0x00010000
@@ -26,15 +27,15 @@ struct dni_Context {
     unsigned int m_dataOffset;
     unsigned int m_whatever;
     imStream* m_stream;
-    imString m_location;
+    ST::string m_location;
 };
 
-static imString read_zstring(imStream* stream)
+static ST::string read_zstring(imStream* stream)
 {
     unsigned int offset = stream->read32();
     size_t psave = stream->tell();
     stream->seek(offset);
-    imString str = stream->readZString();
+    ST::string str = stream->readZString();
     stream->seek(psave);
     return str;
 }
@@ -42,7 +43,7 @@ static imString read_zstring(imStream* stream)
 static imVfsEntry* read_dnidirs(dni_Context* dni, unsigned int offset)
 {
     dni->m_stream->seek(offset);
-    imString name = read_zstring(dni->m_stream);
+    ST::string name = read_zstring(dni->m_stream);
     if (offset >= dni->m_fileOffset) {
         // File entry
         unsigned int vext = dni->m_stream->read32();
@@ -64,7 +65,7 @@ static imVfsEntry* read_dnidirs(dni_Context* dni, unsigned int offset)
     }
 }
 
-imVfsEntry* read_dnifile(imStream* stream, imString location)
+imVfsEntry* read_dnifile(imStream* stream, const ST::string& location)
 {
     if (stream->read32() != DIRT_MAGIC)
         return 0;

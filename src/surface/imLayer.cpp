@@ -55,17 +55,17 @@ bool imLayer::read(imStream* stream)
     m_zFlags = stream->read32();
     m_miscFlags = stream->read32();
 
-    imLog("DEBUG: [SDB] [LAYER] (+14) %f", stream->readFloat());
-    imLog("DEBUG: [SDB] [LAYER] (+18) %f", stream->readFloat());
+    imLog("DEBUG: [SDB] [LAYER] (+14) {}", stream->readFloat());
+    imLog("DEBUG: [SDB] [LAYER] (+18) {}", stream->readFloat());
 
     if ((m_zFlags & kZLODBias) != 0)
         m_lodBias = stream->readFloat();
     if ((m_layerType & kLayer_100) != 0)
-        imLog("DEBUG: [SDB] [LAYER] (+20) %f", stream->readFloat());
+        imLog("DEBUG: [SDB] [LAYER] (+20) {}", stream->readFloat());
     if ((m_layerType & kLayer_200) != 0)
-        imLog("DEBUG: [SDB] [LAYER] (+24) %f", stream->readFloat());
+        imLog("DEBUG: [SDB] [LAYER] (+24) {}", stream->readFloat());
     if ((m_layerType & kLayer_4000) != 0)
-        imLog("DEBUG: [SDB] [LAYER] (+28) %f", stream->readFloat());
+        imLog("DEBUG: [SDB] [LAYER] (+28) {}", stream->readFloat());
 
     m_ambient.read(stream);
     m_color.read(stream);
@@ -89,7 +89,7 @@ bool imLayer::read(imStream* stream)
         m_animUVW.read(stream);
 
     if ((m_layerType & 0x1000) != 0) {
-        imLog("ERROR: Layer flags 0x%X not currently supported",
+        imLog("ERROR: Layer flags 0x{X} not currently supported",
               m_layerType & 0x1000);
         return false;
     }

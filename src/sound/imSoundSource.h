@@ -32,8 +32,8 @@ public:
 
 private:
     imKeyList m_keys;
-    std::vector<imString> m_soundKeys;
-    imString m_sceneObjectKey, m_animPathKey, m_listenerKey, m_observerKey;
+    std::vector<ST::string> m_soundKeys;
+    ST::string m_sceneObjectKey, m_animPathKey, m_listenerKey, m_observerKey;
 };
 
 #endif

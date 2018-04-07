@@ -26,15 +26,12 @@ set(imCommon_HEADERS
     imGeometry3.h
     imKeyList.h
     imRef.h
-    imString.h
     imThread.h
 )
 
 set(imCommon_SOURCES
     imGeometry3.cpp
     imKeyList.cpp
-    imLog.cpp
-    imString.cpp
     Main.cpp
 )
 
@@ -46,5 +43,6 @@ target_link_libraries(imaginaryMyst imAnim imScene imSound imSurface imVfs)
 target_link_libraries(imaginaryMyst squish SDL2 SDL2main)
 target_link_libraries(imaginaryMyst ${OPENGL_LIBRARIES})
 target_link_libraries(imaginaryMyst ${ZLIB_LIBRARIES})
+target_link_libraries(imaginaryMyst ${STRING_THEORY_LIBRARIES})
 
 install(TARGETS imaginaryMyst RUNTIME DESTINATION bin)

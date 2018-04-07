@@ -15,57 +15,26 @@
  */
 
 #include "imStream.h"
+
+#include <string_theory/string_stream>
 #include <cstring>
 
 /* imStream */
-struct zstring_buffer {
-    char* m_buf;
-    size_t m_alloc;
-    size_t m_size;
-
-    zstring_buffer()
-    {
-        m_buf = new char[256];
-        m_alloc = 256;
-        m_size = 0;
-    }
-
-    ~zstring_buffer()
-    {
-        delete[] m_buf;
-    }
-
-    void append(char ch)
-    {
-        if (m_size >= m_alloc) {
-            // Expand the buffer
-            size_t bigger = m_alloc * 2;
-            char* bufTemp = new char[bigger];
-            memcpy(bufTemp, m_buf, m_alloc);
-            delete[] m_buf;
-            m_buf = bufTemp;
-            m_alloc = bigger;
-        }
-        m_buf[m_size++] = ch;
-    }
-};
-
-imString imStream::readString(size_t length)
+ST::string imStream::readString(size_t length)
 {
-    char* buffer = new char[length];
-    read(buffer, length);
-    imString str(buffer, length);
-    delete[] buffer;
-    return str;
+    ST::char_buffer buffer;
+    buffer.allocate(length);
+    read(buffer.data(), length);
+    return ST::string::from_latin_1(buffer);
 }
 
-imString imStream::readZString()
+ST::string imStream::readZString()
 {
-    zstring_buffer strbuf;
+    ST::string_stream strbuf;
     char ch;
     while (!eof() && ((ch = readByte()) != 0))
-        strbuf.append(ch);
-    return imString(strbuf.m_buf, strbuf.m_size);
+        strbuf.append_char(ch);
+    return strbuf.to_string(false);
 }
 
 
@@ -79,13 +48,13 @@ size_t imBufferStream::read(void* buffer, size_t count)
     return count;
 }
 
-imString imBufferStream::readLine()
+ST::string imBufferStream::readLine()
 {
     const unsigned char* lnEnd = m_ptr;
     while (lnEnd < m_end && *lnEnd != '\r' && *lnEnd != '\n')
         lnEnd++;
 
-    imString ln((const char*)m_ptr, lnEnd - m_ptr);
+    ST::string ln = ST::string::from_latin_1((const char*)m_ptr, lnEnd - m_ptr);
     if (lnEnd[0] == '\r' && lnEnd < m_end && lnEnd[1] == '\n')
         m_ptr = lnEnd + 2;  // Windows EOL
     else
@@ -95,10 +64,10 @@ imString imBufferStream::readLine()
 
 
 /* imFileStream */
-bool imFileStream::open(const char* filename, const char* mode)
+bool imFileStream::open(const ST::string& filename, const char* mode)
 {
     close();
-    m_file = fopen(filename, mode);
+    m_file = fopen(filename.c_str(), mode);
     if (m_file == 0)
         return false;
 
@@ -108,7 +77,7 @@ bool imFileStream::open(const char* filename, const char* mode)
     return true;
 }
 
-imString imFileStream::readLine()
+ST::string imFileStream::readLine()
 {
     char buf[4096];
     memset(buf, 0, 4096);
@@ -118,5 +87,5 @@ imString imFileStream::readLine()
         len--;
     if (len > 0 && buf[len-1] == '\r')
         len--;
-    return imString(buf, len);
+    return ST::string::from_latin_1(buf, len);
 }

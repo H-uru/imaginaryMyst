@@ -50,6 +50,14 @@ set_package_properties(ZLIB PROPERTIES
     TYPE REQUIRED
 )
 
+find_package(string_theory 2.0 REQUIRED)
+set_package_properties(string_theory PROPERTIES
+    URL "http://github.com/zrax/string_theory"
+    DESCRIPTION "Flexible C++11 string library and type-safe formatter"
+    TYPE REQUIRED
+)
+include_directories(${STRING_THEORY_INCLUDE_DIRS})
+
 feature_summary(WHAT ALL FATAL_ON_MISSING_REQUIRED_PACKAGES)
 include_directories(${GLEW_INCLUDE_DIR})
 include_directories(${OPENGL_INCLUDE_DIR})

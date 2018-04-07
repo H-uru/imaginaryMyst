@@ -17,7 +17,7 @@
 #ifndef _IM_STREAM_H
 #define _IM_STREAM_H
 
-#include "imString.h"
+#include <string_theory/string>
 
 #define STREAM_READ_BASIC(type, func) \
     type func() \
@@ -54,8 +54,8 @@ public:
              | ((v & 0xFF000000) >> 24) | ((v & 0x00FF0000) >> 8);
     }
 
-    imString readString(size_t length);
-    imString readZString();
+    ST::string readString(size_t length);
+    ST::string readZString();
 
     STREAM_WRITE_BASIC(unsigned char, writeByte)
     STREAM_WRITE_BASIC(unsigned short, write16)
@@ -70,20 +70,20 @@ public:
         write32(v);
     }
 
-    void writeString(imString str)
+    void writeString(const ST::string& str)
     {
-        write(str.data(), str.length());
+        write(str.c_str(), str.size());
     }
 
-    void writeZString(imString str)
+    void writeZString(const ST::string& str)
     {
-        write(str.data(), str.length());
+        write(str.c_str(), str.size());
         writeByte(0);
     }
 
     virtual size_t read(void* buffer, size_t count) = 0;
     virtual size_t write(const void* buffer, size_t count) = 0;
-    virtual imString readLine() = 0;
+    virtual ST::string readLine() = 0;
 
     virtual size_t size() const = 0;
     virtual bool eof() const = 0;
@@ -113,7 +113,7 @@ public:
         return -1;
     }
 
-    virtual imString readLine();
+    virtual ST::string readLine();
 
     virtual size_t size() const
     { return (size_t)(m_end - m_buffer); }
@@ -148,7 +148,7 @@ public:
             fclose(m_file);
     }
 
-    bool open(const char* filename, const char* mode);
+    bool open(const ST::string& filename, const char* mode);
 
     void close()
     {
@@ -168,7 +168,7 @@ public:
         return fwrite(buffer, 1, count, m_file);
     }
 
-    virtual imString readLine();
+    virtual ST::string readLine();
 
     virtual size_t size() const
     { return m_size; }

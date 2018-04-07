@@ -26,9 +26,11 @@
 #  include <direct.h>
 #endif
 
-imString s_rootPath;
+ST::string s_rootPath;
 imVfs s_vfs;
 SDL_Window *s_display;
+
+FILE *s_logFile = stderr;
 
 PFNGLCOMPRESSEDTEXIMAGE2DARBPROC GLX_CompressedTexImage2D = 0;
 
@@ -49,7 +51,7 @@ int main(int argc, char *argv[])
     s_rootPath = _getcwd(pathbuf, MAX_PATH);
 #else
     s_rootPath = path_pathname(argv[0]);
-    if (s_rootPath.isEmpty())
+    if (s_rootPath.empty())
         s_rootPath = ".";
 #endif
 
@@ -58,26 +60,26 @@ int main(int argc, char *argv[])
     imFileStream settings;
     if (settings.open(s_rootPath + "/imaginaryMyst.cfg", "rt")) {
         while (!settings.eof()) {
-            imString ln = settings.readLine();
-            size_t commentPos = ln.find('#');
-            if (commentPos != (static_cast<size_t>(-1)))
+            ST::string ln = settings.readLine();
+            ST_ssize_t commentPos = ln.find('#');
+            if (commentPos != -1)
                 ln = ln.left(commentPos);
-            ln = ln.strip();
-            if (ln.length() == 0) {
+            ln = ln.trim();
+            if (ln.empty()) {
                 continue;
             } else if (ln == "NoDXT") {
                 imMipmap::s_noDXTCompression = true;
             } else if (ln.left(5) == "Width") {
-                ln = ln.mid(6).strip();
-                winWidth = strtol(ln.data(), NULL, 0);
+                ln = ln.substr(6).trim();
+                winWidth = ln.to_int();
             } else if (ln.left(6) == "Height") {
-                ln = ln.mid(7).strip();
-                winHeight = strtol(ln.data(), NULL, 0);
+                ln = ln.substr(7).trim();
+                winHeight = ln.to_int();
             } else {
-                size_t cmdPos = ln.find(' ');
-                if (cmdPos != (static_cast<size_t>(-1)))
+                ST_ssize_t cmdPos = ln.find(' ');
+                if (cmdPos != -1)
                     ln = ln.left(cmdPos);
-                imLog("Unrecognized option in config: %s", ln.data());
+                imLog("Unrecognized option in config: {}", ln);
             }
         }
     } else {
@@ -127,14 +129,14 @@ int main(int argc, char *argv[])
     for (k = roomKeys.begin(); k != roomKeys.end(); ++k) {
         stream = s_vfs.openSdb(*k);
         if (stream == 0) {
-            imLog("Error opening SDB %d", *k);
+            imLog("Error opening SDB {}", *k);
             continue;
         }
-        imLog("DEBUG: Reading SDB %d...", *k);
+        imLog("DEBUG: Reading SDB {}...", *k);
         imSceneIndex scn;
         if (!scn.read(stream)) {
-            imLog("Error reading SDB %d", *k);
-            imLog("But we got to %08X", stream->tell());
+            imLog("Error reading SDB {}", *k);
+            imLog("But we got to {08X}", stream->tell());
         }
         delete stream;
     }
