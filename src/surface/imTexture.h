@@ -17,7 +17,7 @@
 #ifndef _IM_TEXTURE_H
 #define _IM_TEXTURE_H
 
-#include "../imKeyList.h"
+#include "imKeyList.h"
 
 class imTexture : public imDataRef {
 public:

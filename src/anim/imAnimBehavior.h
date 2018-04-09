@@ -18,7 +18,7 @@
 #define _IM_ANIMBEHAVIOR_H
 
 #include <vector>
-#include "../vfs/imStream.h"
+#include "vfs/imStream.h"
 #include "imController.h"
 
 class imAnimController {

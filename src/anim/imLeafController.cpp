@@ -15,7 +15,7 @@
  */
 
 #include "imLeafController.h"
-#include "../imCommon.h"
+#include "imCommon.h"
 
 /* imLeafController */
 imLeafController::~imLeafController()

@@ -17,8 +17,8 @@
 #ifndef _IM_KEYFRAME_H
 #define _IM_KEYFRAME_H
 
-#include "../vfs/imStream.h"
-#include "../imGeometry3.h"
+#include "vfs/imStream.h"
+#include "imGeometry3.h"
 
 class imKeyFrame {
 public:

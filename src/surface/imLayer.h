@@ -18,8 +18,8 @@
 #define _IM_LAYER_H
 
 #include "imTexture.h"
-#include "../imGeometry3.h"
-#include "../anim/imAnimBehavior.h"
+#include "imGeometry3.h"
+#include "anim/imAnimBehavior.h"
 
 struct imColorRGBA {
     imColorRGBA() : m_red(0.0f), m_green(0.0f), m_blue(0.0f), m_alpha(0.0f)

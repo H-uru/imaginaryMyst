@@ -19,7 +19,7 @@
 
 #include <vector>
 #include "imLayer.h"
-#include "../imKeyList.h"
+#include "imKeyList.h"
 
 class imMaterial : public imDataRef {
 public:

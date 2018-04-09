@@ -15,7 +15,7 @@
  */
 
 #include "imTexture.h"
-#include "../imCommon.h"
+#include "imCommon.h"
 
 bool imTexture::read(imStream* stream)
 {

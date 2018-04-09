@@ -17,7 +17,7 @@
 #ifndef _IM_STREAM_H
 #define _IM_STREAM_H
 
-#include "../imString.h"
+#include "imString.h"
 
 #define STREAM_READ_BASIC(type, func) \
     type func() \

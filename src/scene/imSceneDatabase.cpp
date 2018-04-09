@@ -15,7 +15,7 @@
  */
 
 #include "imSceneDatabase.h"
-#include "../imCommon.h"
+#include "imCommon.h"
 
 /* imObjectDatabase */
 bool imObjectDatabase::readIndex(imStream* stream)

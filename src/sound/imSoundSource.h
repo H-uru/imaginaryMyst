@@ -17,8 +17,8 @@
 #ifndef _IM_SOUNDSOURCE_H
 #define _IM_SOUNDSOURCE_H
 
-#include "../imKeyList.h"
-#include "../imRef.h"
+#include "imKeyList.h"
+#include "imRef.h"
 
 class imSoundSource : public imDataRef {
 public:

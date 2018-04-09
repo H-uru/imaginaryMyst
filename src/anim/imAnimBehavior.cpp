@@ -16,7 +16,7 @@
 
 #include "imAnimBehavior.h"
 #include "imLeafController.h"
-#include "../imCommon.h"
+#include "imCommon.h"
 
 /* imAnimController */
 void imAnimController::read(imStream* stream)

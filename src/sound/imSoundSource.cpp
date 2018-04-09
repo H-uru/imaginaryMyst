@@ -15,7 +15,7 @@
  */
 
 #include "imSoundSource.h"
-#include "../imCommon.h"
+#include "imCommon.h"
 
 bool imSoundSource::read(imStream* stream)
 {
