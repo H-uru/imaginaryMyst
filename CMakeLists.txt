@@ -36,8 +36,8 @@ set_package_properties(OpenGL PROPERTIES
     TYPE REQUIRED
 )
 
-find_package(SDL REQUIRED)
-set_package_properties(SDL PROPERTIES
+find_package(SDL2 REQUIRED)
+set_package_properties(SDL2 PROPERTIES
     URL "https://www.libsdl.org"
     DESCRIPTION "Simple DirectMedia Layer"
     TYPE REQUIRED
@@ -51,9 +51,9 @@ set_package_properties(ZLIB PROPERTIES
 )
 
 feature_summary(WHAT ALL FATAL_ON_MISSING_REQUIRED_PACKAGES)
-
+include_directories(${GLEW_INCLUDE_DIR})
 include_directories(${OPENGL_INCLUDE_DIR})
-include_directories(${SDL_INCLUDE_DIR})
+include_directories(${SDL2_INCLUDE_DIRS})
 include_directories(${ZLIB_INCLUDE_DIR})
 
 # 3rd party Squish library for DXT codecs
