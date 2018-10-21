@@ -48,7 +48,7 @@ public:
 
 private:
     unsigned int m_animFlags;
-    imString m_filename;
+    ST::string m_filename;
 };
 
 class imQTLayer : public imLayer {
@@ -63,7 +63,7 @@ public:
 
 private:
     unsigned int m_animFlags;
-    imString m_filename;
+    ST::string m_filename;
 };
 
 class imBinkLayer : public imLayer {
@@ -78,7 +78,7 @@ public:
 
 private:
     unsigned int m_animFlags;
-    imString m_filename;
+    ST::string m_filename;
 };
 
 class imFireLayer : public imLayer {

@@ -23,7 +23,7 @@ bool imObjectDatabase::readIndex(imStream* stream)
     size_t count = stream->read32();
     for (size_t i=0; i<count; i++) {
         size_t slen = stream->read32();
-        imString name = stream->readString(slen);
+        ST::string name = stream->readString(slen);
 
         std::vector<unsigned int> refs;
         refs.resize(stream->read32());
@@ -34,9 +34,9 @@ bool imObjectDatabase::readIndex(imStream* stream)
     return true;
 }
 
-std::vector<unsigned int> imObjectDatabase::get(imString name) const
+std::vector<unsigned int> imObjectDatabase::get(const ST::string& name) const
 {
-    std::map<imString, std::vector<unsigned int> >::const_iterator f =
+    std::map<ST::string, std::vector<unsigned int> >::const_iterator f =
         m_objects.find(name);
     if (f == m_objects.end())
         return std::vector<unsigned int>();

@@ -19,14 +19,19 @@
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_opengl.h>
+#include <string_theory/stdio>
 #include "vfs/imVfs.h"
 
-void imLog(const char* message, ...);
-void imLog(const char* message, va_list args);
+template <typename... args_T>
+void imLog(const char *message, args_T ...args)
+{
+    extern FILE *s_logFile;
+    ST::printf(s_logFile, message, std::forward<args_T>(args)...);
+    fputs("\n", s_logFile);
+}
 
-extern imString s_rootPath;
+extern ST::string s_rootPath;
 extern imVfs s_vfs;
-extern FILE* s_logFile;
 extern SDL_Window* s_display;
 
 /* OpenGL Extensions */

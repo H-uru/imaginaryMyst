@@ -17,7 +17,7 @@
 #include "imVfs.h"
 #include "imCommon.h"
 #include <zlib.h>
-#include <cstring>
+#include <string_theory/stdio>
 
 // Cross-Platform filesystem stuff
 #ifdef WIN32
@@ -26,38 +26,38 @@
     #include <sys/types.h>
     #include <sys/stat.h>
 
-    imString path_filename(imString path)
+    ST::string path_filename(const ST::string& path)
     {
-        size_t split = path.r_find('\\');
-        if (split == (size_t)-1)
+        ST_ssize_t split = path.find_last('\\');
+        if (split == -1)
             return path;
-        return path.mid(split + 1);
+        return path.substr(split + 1);
     }
 
-    imString path_pathname(imString path)
+    ST::string path_pathname(const ST::string& path)
     {
-        size_t split = path.r_find('\\');
-        if (split == (size_t)-1)
-            return "";
+        ST_ssize_t split = path.find_last('\\');
+        if (split == -1)
+            return ST::string();
         return path.left(split);
     }
 
-    bool file_exists(imString path)
+    bool file_exists(const ST::string& path)
     {
         struct _stat stbuf;
-        return _stat(path.data(), &stbuf) == 0;
+        return _wstat(path.to_wchar().data(), &stbuf) == 0;
     }
 
-    static imVfsEntry* find_files(imString path)
+    static imVfsEntry* find_files(const ST::string& path)
     {
-        WIN32_FIND_DATAA fd;
-        HANDLE hList = FindFirstFileA(path.data(), &fd);
+        WIN32_FIND_DATAW fd;
+        HANDLE hList = FindFirstFileW(path.to_wchar().data(), &fd);
         if (hList == 0)
             return 0;
 
         std::list<imRef<imVfsEntry> > children;
         do {
-            if (strcmp(fd.cFileName, ".") == 0 || strcmp(fd.cFileName, "..") == 0)
+            if (wcscmp(fd.cFileName, L".") == 0 || wcscmp(fd.cFileName, L"..") == 0)
                 continue;
             if ((fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) != 0) {
                 // Add an imVfsDirEntry
@@ -69,7 +69,7 @@
                                        fd.nFileSizeLow, path + "\\" + fd.cFileName)
                 );
             }
-        } while (FindNextFileA(hList, &fd));
+        } while (FindNextFileW(hList, &fd));
         FindClose(hList);
         return new imVfsDirEntry(path_filename(path), children);
     }
@@ -81,32 +81,32 @@
     #include <sys/types.h>
     #include <sys/stat.h>
 
-    imString path_filename(imString path)
+    ST::string path_filename(const ST::string& path)
     {
-        size_t split = path.r_find('/');
-        if (split == (size_t)-1)
+        ST_ssize_t split = path.find_last('/');
+        if (split == -1)
             return path;
-        return path.mid(split + 1);
+        return path.substr(split + 1);
     }
 
-    imString path_pathname(imString path)
+    ST::string path_pathname(const ST::string& path)
     {
-        size_t split = path.r_find('/');
+        ST_ssize_t split = path.find_last('/');
         if (split == (size_t)-1)
-            return "";
+            return ST::string();
         return path.left(split);
     }
 
-    bool file_exists(imString path)
+    bool file_exists(const ST::string& path)
     {
         struct stat stbuf;
-        return stat(path.data(), &stbuf) == 0;
+        return stat(path.c_str(), &stbuf) == 0;
     }
 
-    static imVfsEntry* find_files(imString path)
+    static imVfsEntry* find_files(const ST::string& path)
     {
         dirent** des;
-        int count = scandir(path.data(), &des, 0, 0);
+        int count = scandir(path.c_str(), &des, 0, 0);
         if (count < 0)
             return 0;
 
@@ -120,10 +120,11 @@
             } else {
                 // Add regular files
                 struct stat fs;
-                if (stat(path + "/" + des[i]->d_name, &fs) == 0) {
+                const ST::string file_path = path + "/" + des[i]->d_name;
+                if (stat(file_path.c_str(), &fs) == 0) {
                     children.push_back(
                         new imVfsFileEntry(des[i]->d_name, imVfsEntry::Type_File,
-                                           fs.st_size, path + "/" + des[i]->d_name)
+                                           fs.st_size, file_path)
                     );
                 } else {
                     // TODO: Don't fail silently!
@@ -143,17 +144,17 @@
 std::list<imRef<imVfsEntry> > imVfsDirEntry::children() const
 {
     std::list<imRef<imVfsEntry> > childList;
-    std::map<imString, imRef<imVfsEntry> >::const_iterator it;
+    std::map<ST::string, imRef<imVfsEntry> >::const_iterator it;
     for (it = m_children.begin(); it != m_children.end(); ++it)
         childList.push_back(it->second);
     return childList;
 }
 
-imRef<imVfsEntry> imVfsDirEntry::get(imString name) const
+imRef<imVfsEntry> imVfsDirEntry::get(const ST::string& name) const
 {
-    name = name.toLower();
-    std::map<imString, imRef<imVfsEntry> >::const_iterator f;
-    f = m_children.find(name);
+    const ST::string lowerName = name.to_lower();
+    std::map<ST::string, imRef<imVfsEntry> >::const_iterator f;
+    f = m_children.find(lowerName);
     if (f == m_children.end())
         return 0;
     return f->second;
@@ -163,8 +164,8 @@ void imVfsDirEntry::add(const std::list<imRef<imVfsEntry> >& children)
 {
     std::list<imRef<imVfsEntry> >::const_iterator it;
     for (it = children.begin(); it != children.end(); ++it) {
-        imString ipath = (*it)->name().toLower();
-        std::map<imString, imRef<imVfsEntry> >::iterator f;
+        const ST::string ipath = (*it)->name().to_lower();
+        std::map<ST::string, imRef<imVfsEntry> >::iterator f;
         f = m_children.find(ipath);
         if (f == m_children.end()) {
             m_children[ipath] = *it;
@@ -174,7 +175,7 @@ void imVfsDirEntry::add(const std::list<imRef<imVfsEntry> >& children)
                 it->cast<imVfsDirEntry>()->children()
             );
         } else {
-            imLog("WARN: Duplicate VFS entry '%s'", ipath.data());
+            imLog("WARN: Duplicate VFS entry '{}'", ipath);
             m_children[ipath] = *it;
         }
     }
@@ -184,12 +185,12 @@ void imVfsDirEntry::add(const std::list<imRef<imVfsEntry> >& children)
 /* imVfs */
 imVfs::~imVfs()
 {
-    std::map<imString, imStream*>::iterator it;
+    std::map<ST::string, imStream*>::iterator it;
     for (it = m_dniStreams.begin(); it != m_dniStreams.end(); ++it)
         delete it->second;
 }
 
-void imVfs::addPhysicalPath(imString path)
+void imVfs::addPhysicalPath(const ST::string& path)
 {
     imRef<imVfsEntry> dir = find_files(path);
     if (dir == 0)
@@ -204,9 +205,9 @@ void imVfs::addPhysicalPath(imString path)
     }
 }
 
-void imVfs::addDniFile(imString filename)
+void imVfs::addDniFile(const ST::string& filename)
 {
-    imString location = path_filename(filename);
+    const ST::string location = path_filename(filename);
     imFileStream* stream = new imFileStream();
     if (!stream->open(filename, "rb")) {
         delete stream;
@@ -234,12 +235,12 @@ static void print_recur(imVfsEntry* ent, int tab)
     for (int i=0; i<tab; ++i)
         printf("    ");
     if (ent->isDirectory()) {
-        printf("[%s]\n", ent->name().data());
+        ST::printf("[{}]\n", ent->name());
         std::list<imRef<imVfsEntry> > children = ((imVfsDirEntry*)ent)->children();
         for (std::list<imRef<imVfsEntry> >::iterator it = children.begin(); it != children.end(); ++it)
             print_recur(*it, tab + 1);
     } else {
-        printf("%s\n", ent->name().data());
+        ST::printf("{}\n", ent->name());
     }
 }
 
@@ -248,21 +249,21 @@ void imVfs::debug_print()
     print_recur(m_root, 0);
 }
 
-imStream* imVfs::open(imString path)
+imStream* imVfs::open(const ST::string& path)
 {
     if (!(path[0] == '/'))
         return 0;
-    path = path.mid(1);
+    ST::string open_path = path.substr(1);
 
     imRef<imVfsDirEntry> dir = m_root;
     do {
         if (dir == 0 || !dir->isDirectory())
             return 0;
 
-        size_t split = path.find('/');
-        if (split == (size_t)-1) {
+        ST_ssize_t split = open_path.find('/');
+        if (split == -1) {
             // Last path item, this should be what we want
-            imRef<imVfsFileEntry> entry = dir->get(path).convert<imVfsFileEntry>();
+            imRef<imVfsFileEntry> entry = dir->get(open_path).convert<imVfsFileEntry>();
             if (entry == 0)
                 return 0;
 
@@ -296,10 +297,10 @@ imStream* imVfs::open(imString path)
             }
         } else {
             // Directory along our way
-            imString subdir = path.left(split);
-            path = path.mid(split + 1);
+            ST::string subdir = open_path.left(split);
+            open_path = open_path.substr(split + 1);
             dir = dir->get(subdir).convert<imVfsDirEntry>();
         }
-    } while (!path.isEmpty());
+    } while (!open_path.empty());
     return 0;
 }

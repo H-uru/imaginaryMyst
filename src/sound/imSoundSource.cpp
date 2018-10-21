@@ -26,19 +26,19 @@ bool imSoundSource::read(imStream* stream)
     stream->read32();   // Data size
 
     m_keys.read(stream);
-    imLog("DEBUG: [SDB] [SOUNDSOURCE] '%s' (%u)", m_keys.self().name().data(),
+    imLog("DEBUG: [SDB] [SOUNDSOURCE] '{}' ({})", m_keys.self().name(),
           m_keys.refs().size());
 
-    imLog("DEBUG: [SDB] [SOUNDSOURCE] (+1C) %d", stream->read32());
+    imLog("DEBUG: [SDB] [SOUNDSOURCE] (+1C) {}", stream->read32());
     m_soundKeys.resize(stream->read32());
     for (size_t i=0; i<m_soundKeys.size(); i++) {
         size_t len = stream->read32();
         m_soundKeys[i] = stream->readString(len);
     }
 
-    imLog("DEBUG: [SDB] [SOUNDSOURCE] (+38) %f", stream->readFloat());
-    imLog("DEBUG: [SDB] [SOUNDSOURCE] (?) %d", stream->read32());
-    imLog("DEBUG: [SDB] [SOUNDSOURCE] (+70) %f", stream->readFloat());
+    imLog("DEBUG: [SDB] [SOUNDSOURCE] (+38) {}", stream->readFloat());
+    imLog("DEBUG: [SDB] [SOUNDSOURCE] (?) {}", stream->read32());
+    imLog("DEBUG: [SDB] [SOUNDSOURCE] (+70) {}", stream->readFloat());
 
     size_t len = stream->read32();
     m_sceneObjectKey = stream->readString(len);
@@ -49,20 +49,19 @@ bool imSoundSource::read(imStream* stream)
     len = stream->read32();
     m_observerKey = stream->readString(len);
 
-    imLog("DEBUG: [SDB] [SOUNDSOURCE] (+8C) %f", stream->readFloat());
+    imLog("DEBUG: [SDB] [SOUNDSOURCE] (+8C) {}", stream->readFloat());
     size_t count = stream->read32();
     for (size_t i=0; i<count; i++) {
         len = stream->read32();
-        imLog("DEBUG: [SDB] [SOUNDSOURCE] (+7C) '%s'",
-              stream->readString(len).data());
+        imLog("DEBUG: [SDB] [SOUNDSOURCE] (+7C) '{}'", stream->readString(len));
     }
 
-    imLog("DEBUG: [SDB] [SOUNDSOURCE] (+A4) %f", stream->readFloat());
-    imLog("DEBUG: [SDB] [SOUNDSOURCE] (+A8) %f", stream->readFloat());
-    imLog("DEBUG: [SDB] [SOUNDSOURCE] (+AC) %f", stream->readFloat());
-    imLog("DEBUG: [SDB] [SOUNDSOURCE] (+B0) %f", stream->readFloat());
-    imLog("DEBUG: [SDB] [SOUNDSOURCE] (+C0) %f", stream->readFloat());
-    imLog("DEBUG: [SDB] [SOUNDSOURCE] (+90) %f", stream->readFloat());
+    imLog("DEBUG: [SDB] [SOUNDSOURCE] (+A4) {}", stream->readFloat());
+    imLog("DEBUG: [SDB] [SOUNDSOURCE] (+A8) {}", stream->readFloat());
+    imLog("DEBUG: [SDB] [SOUNDSOURCE] (+AC) {}", stream->readFloat());
+    imLog("DEBUG: [SDB] [SOUNDSOURCE] (+B0) {}", stream->readFloat());
+    imLog("DEBUG: [SDB] [SOUNDSOURCE] (+C0) {}", stream->readFloat());
+    imLog("DEBUG: [SDB] [SOUNDSOURCE] (+90) {}", stream->readFloat());
 
     return true;
 }

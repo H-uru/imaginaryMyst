@@ -21,8 +21,8 @@
 /* imAnimController */
 void imAnimController::read(imStream* stream)
 {
-    imLog("DEBUG: [SDB] [hsDynamicValue] (+0C) %d", stream->read32());
-    imLog("DEBUG: [SDB] [hsDynamicValue] (+10) %f", stream->readFloat());
+    imLog("DEBUG: [SDB] [hsDynamicValue] (+0C) {}", stream->read32());
+    imLog("DEBUG: [SDB] [hsDynamicValue] (+10) {}", stream->readFloat());
 
     allocController(stream->read32());
     if (m_controller != 0)
@@ -66,14 +66,14 @@ void imAnimEvent::read(imStream* stream)
     stream->read32();
     stream->read32();
 
-    imLog("DEBUG: [SDB] [hsFrameEvent] (+0) %d", stream->read32());
-    imLog("DEBUG: [SDB] [hsFrameEvent] (+8) %d", stream->read32());
-    imLog("DEBUG: [SDB] [hsFrameEvent] (+0C) %d", stream->read32());
-    imLog("DEBUG: [SDB] [hsFrameEvent] (+4) %d", stream->read32());
+    imLog("DEBUG: [SDB] [hsFrameEvent] (+0) {}", stream->read32());
+    imLog("DEBUG: [SDB] [hsFrameEvent] (+8) {}", stream->read32());
+    imLog("DEBUG: [SDB] [hsFrameEvent] (+0C) {}", stream->read32());
+    imLog("DEBUG: [SDB] [hsFrameEvent] (+4) {}", stream->read32());
 
     size_t len = stream->read32();
-    imString str = stream->readString(len);
-    imLog("DEBUG: [SDB] [hsFrameEvent] (+10) '%s'", str.data());
+    ST::string str = stream->readString(len);
+    imLog("DEBUG: [SDB] [hsFrameEvent] (+10) '{}'", str);
 }
 
 
@@ -113,7 +113,7 @@ bool imAnimBehavior::read(imStream* stream)
         m_events[i].read(stream);
 
     if ((m_saveFlags & 0x102) != 0) {
-        imLog("ERROR: AnimBehavior flags 0x%X not currently supported",
+        imLog("ERROR: AnimBehavior flags 0x{X} not currently supported",
               m_saveFlags & 0x102);
         return false;
     }

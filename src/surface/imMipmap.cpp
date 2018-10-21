@@ -31,27 +31,27 @@ void imMipmap::read(imStream* stream)
 {
     unsigned int version = stream->read32();
     if (version != 1) {
-        imLog("Invalid Mipmap version: %d", version);
+        imLog("Invalid Mipmap version: {}", version);
         return;
     }
-    imLog("DEBUG: [HSM] (+4) %d", stream->read32());
+    imLog("DEBUG: [HSM] (+4) {}", stream->read32());
     m_height = stream->read32();
     m_width = stream->read32();
-    imLog("DEBUG: [HSM] (+10) %d", stream->readByte());
-    imLog("DEBUG: [HSM] (Compression Type) %d", stream->read32());
+    imLog("DEBUG: [HSM] (+10) {}", stream->readByte());
+    imLog("DEBUG: [HSM] (Compression Type) {}", stream->read32());
 
     m_levels.resize(stream->read32());
-    imLog("DEBUG: [HSM] (+19) %d", stream->read32());
+    imLog("DEBUG: [HSM] (+19) {}", stream->read32());
     m_stride = stream->read32();
     m_dxtType = (DXTLevel)stream->read32();
-    imLog("DEBUG: [HSM] (DXT Type) %d", m_dxtType);
+    imLog("DEBUG: [HSM] (DXT Type) {}", m_dxtType);
     buildMipLevels();
 
     if (m_buffer != 0)
         delete[] m_buffer;
     m_buffer = new unsigned char[m_totalSize];
     if (stream->tell() + m_totalSize != stream->size())
-        imLog("WARN: HSM data size mismatch!  [%08X %08X]",
+        imLog("WARN: HSM data size mismatch!  [{08X} {08X}]",
               stream->tell() + m_totalSize, stream->size());
     stream->read(m_buffer, m_totalSize);
 }
@@ -86,7 +86,7 @@ void imMipmap::prepare()
     }
 
     for (size_t i=0; i<m_levels.size(); i++) {
-        //imLog("Decompressing Level %u: %dx%d (0x%08x bytes) at 0x%08x",
+        //imLog("Decompressing Level {}: {}x{} (0x{08x} bytes) at 0x{08x}",
         //      i, m_levels[i].m_width, m_levels[i].m_height, m_levels[i].m_size,
         //      m_levels[i].m_offset);
         if (s_noDXTCompression) {
@@ -120,7 +120,7 @@ void imMipmap::buildMipLevels()
         else
             lev.m_size = (height * width * m_stride) / 16;
 
-        //imLog("%dx%d 0x%08x", width, height, lev.m_size);
+        //imLog("{}x{} 0x{08x}", width, height, lev.m_size);
 
         m_levels[i] = lev;
         m_totalSize += lev.m_size;
@@ -131,7 +131,7 @@ void imMipmap::buildMipLevels()
     }
 }
 
-void imMipmap::TEST_ExportDDS(imString filename)
+void imMipmap::TEST_ExportDDS(const ST::string& filename)
 {
     imFileStream S;
     S.open(filename, "wb");

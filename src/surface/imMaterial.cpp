@@ -36,19 +36,19 @@ bool imMaterial::read(imStream* stream, imSceneIndex* idx)
     stream->read32();   // Data size
 
     m_keys.read(stream);
-    imLog("DEBUG: [SDB] [MATERIAL] '%s' (%u)", m_keys.self().name().data(),
+    imLog("DEBUG: [SDB] [MATERIAL] '{}' ({})", m_keys.self().name(),
           m_keys.refs().size());
     m_readFlags = stream->read32();
-    imLog("DEBUG: [SDB] [MATERIAL] (Read Flags) %08X", m_readFlags);
+    imLog("DEBUG: [SDB] [MATERIAL] (Read Flags) {08X}", m_readFlags);
 
     unsigned int this_2C = stream->read32();
-    imLog("DEBUG: [SDB] [MATERIAL] (+2C) %d", this_2C);
-    imLog("DEBUG: [SDB] [MATERIAL] (+28) %d", stream->read32());
+    imLog("DEBUG: [SDB] [MATERIAL] (+2C) {}", this_2C);
+    imLog("DEBUG: [SDB] [MATERIAL] (+28) {}", stream->read32());
 
     m_layers.resize(stream->read32());
     bool bugged = false;
     for (size_t i=0; i<m_layers.size(); i++) {
-        imLog("DEBUG: [SDB] Layer #%u", i);
+        imLog("DEBUG: [SDB] Layer #{}", i);
         m_layers[i] = imLayer::MakeLayer(stream->read32());
         if (m_layers[i] == 0)
             bugged = true;

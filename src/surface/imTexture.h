@@ -18,6 +18,7 @@
 #define _IM_TEXTURE_H
 
 #include "imKeyList.h"
+#include "imRef.h"
 
 class imTexture : public imDataRef {
 public:
@@ -32,7 +33,7 @@ public:
     const imKeyList& keys() const
     { return m_keys; }
 
-    imString textureName() const
+    const ST::string& textureName() const
     { return m_textureName; }
 
     unsigned int flags() const
@@ -41,7 +42,7 @@ public:
 private:
     imKeyList m_keys;
     unsigned int m_readFlags;
-    imString m_textureName;
+    ST::string m_textureName;
     unsigned int m_textureFlags;
 };
 

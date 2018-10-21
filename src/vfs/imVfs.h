@@ -18,6 +18,8 @@
 #define _IM_VFS_H
 
 #include "imStream.h"
+#include "imRef.h"
+#include <string_theory/format>
 #include <map>
 #include <list>
 
@@ -31,7 +33,7 @@ public:
     };
 
 public:
-    imVfsEntry(imString name, VfsType type)
+    imVfsEntry(const ST::string& name, VfsType type)
     : m_name(name), m_type(type)
     { }
 
@@ -46,7 +48,7 @@ public:
     bool isCompressed() const
     { return (m_type & Type_ZLib) != 0; }
 
-    imString name() const
+    const ST::string& name() const
     { return m_name; }
 
     VfsType type() const
@@ -56,7 +58,7 @@ public:
     { m_type = (VfsType)(m_type | Type_ZLib); }
 
 private:
-    imString m_name;
+    ST::string m_name;
     VfsType m_type;
 };
 
@@ -64,10 +66,10 @@ private:
 class imVfsDirEntry : public imVfsEntry {
 public:
     imVfsDirEntry()
-    : imVfsEntry(imString(), Type_Directory)
+    : imVfsEntry(ST::null, Type_Directory)
     { }
 
-    imVfsDirEntry(imString name, const std::list<imRef<imVfsEntry> >& children)
+    imVfsDirEntry(const ST::string& name, const std::list<imRef<imVfsEntry> >& children)
     : imVfsEntry(name, Type_Directory)
     {
         add(children);
@@ -77,25 +79,25 @@ public:
     { }
 
     std::list<imRef<imVfsEntry> > children() const;
-    imRef<imVfsEntry> get(imString name) const;
+    imRef<imVfsEntry> get(const ST::string& name) const;
 
     void add(const std::list<imRef<imVfsEntry> >& children);
 
 private:
     // Map these by the entry name for faster lookups
-    std::map<imString, imRef<imVfsEntry> > m_children;
+    std::map<ST::string, imRef<imVfsEntry> > m_children;
 };
 
 
 class imVfsFileEntry : public imVfsEntry {
 public:
-    imVfsFileEntry(imString name, VfsType type, size_t size, imString location)
+    imVfsFileEntry(const ST::string& name, VfsType type, size_t size, const ST::string& location)
     : imVfsEntry(name, type), m_vext(0), m_voffset(0), m_size(size),
       m_csize(0), m_location(location)
     { }
 
-    imVfsFileEntry(imString name, VfsType type, unsigned int vext,
-                   size_t offset, size_t size, size_t csize, imString location)
+    imVfsFileEntry(const ST::string& name, VfsType type, unsigned int vext,
+                   size_t offset, size_t size, size_t csize, const ST::string& location)
     : imVfsEntry(name, type), m_vext(vext), m_voffset(offset),
       m_size(size), m_csize(csize), m_location(location)
     {
@@ -118,7 +120,7 @@ public:
     size_t csize() const
     { return m_csize; }
 
-    imString location() const
+    const ST::string& location() const
     { return m_location; }
 
 private:
@@ -126,7 +128,7 @@ private:
     size_t m_voffset;       // Offset in Virtual files
     size_t m_size;          // Size of file
     size_t m_csize;         // Compressed (Zlib) size
-    imString m_location;    // Where the file is stored
+    ST::string m_location;  // Where the file is stored
 };
 
 
@@ -139,32 +141,32 @@ public:
 
     ~imVfs();
 
-    void addPhysicalPath(imString path);
-    void addDniFile(imString filename);
+    void addPhysicalPath(const ST::string& path);
+    void addDniFile(const ST::string& filename);
     void debug_print();
 
-    imStream* open(imString path);
+    imStream* open(const ST::string& path);
 
     imStream* openSdb(unsigned int node)
     {
-        return open(imString::Format("/sdb/%u.vdb", node));
+        return open(ST::format("/sdb/{}.vdb", node));
     }
 
     imStream* openMdb(unsigned int node)
     {
-        return open(imString::Format("/mdb/%u.vdb", node));
+        return open(ST::format("/mdb/{}.vdb", node));
     }
 
 private:
     imRef<imVfsDirEntry> m_root;
-    std::map<imString, imStream*> m_dniStreams;
+    std::map<ST::string, imStream*> m_dniStreams;
 };
 
 
-imString path_filename(imString path);
-imString path_pathname(imString path);
-bool file_exists(imString path);
+ST::string path_filename(const ST::string& path);
+ST::string path_pathname(const ST::string& path);
+bool file_exists(const ST::string& path);
 
-imVfsEntry* read_dnifile(imStream* stream, imString location);
+imVfsEntry* read_dnifile(imStream* stream, const ST::string& location);
 
 #endif

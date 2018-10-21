@@ -48,10 +48,10 @@ public:
     }
 
 private:
-    imString m_name;
-    imString m_page;
-    std::vector<imString> m_sceneRefs;
-    std::vector<imString> m_keyRefs;
+    ST::string m_name;
+    ST::string m_page;
+    std::vector<ST::string> m_sceneRefs;
+    std::vector<ST::string> m_keyRefs;
     std::vector<imRef<imTexture> > m_textures;
     std::vector<imRef<imMaterial> > m_materials;
     imEnvironment m_environment;

@@ -26,7 +26,7 @@ imLeafController::~imLeafController()
 
 void imLeafController::read(imStream* stream)
 {
-    imLog("DEBUG: [SDB] [plLeafController] (UruUnknown) %d", stream->read32());
+    imLog("DEBUG: [SDB] [plLeafController] (UruUnknown) {}", stream->read32());
 
     for (size_t i=0; i<m_ease.size(); i++)
         delete m_ease[i];

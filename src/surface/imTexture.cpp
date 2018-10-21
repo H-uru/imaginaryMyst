@@ -26,10 +26,10 @@ bool imTexture::read(imStream* stream)
     stream->read32();   // Data size
 
     m_keys.read(stream);
-    imLog("DEBUG: [SDB] [TEXTURE] '%s' (%u)", m_keys.self().name().data(),
+    imLog("DEBUG: [SDB] [TEXTURE] '{}' ({})", m_keys.self().name(),
           m_keys.refs().size());
     m_readFlags = stream->read32();
-    imLog("DEBUG: [SDB] [TEXTURE] (Read Flags) %08X", m_readFlags);
+    imLog("DEBUG: [SDB] [TEXTURE] (Read Flags) {08X}", m_readFlags);
 
     if (stream->read32() != 0x3333) {
         imLog("Invalid hsGTexture Magic");
@@ -37,8 +37,8 @@ bool imTexture::read(imStream* stream)
     }
     size_t len = stream->read32();
     m_textureName = stream->readString(len);
-    imLog("DEBUG: [SDB] [TEXTURE] (Texture Name) '%s'", m_textureName.data());
+    imLog("DEBUG: [SDB] [TEXTURE] (Texture Name) '{}'", m_textureName);
     m_textureFlags = stream->read32();
-    imLog("DEBUG: [SDB] [TEXTURE] (Texture Flags) %08X", m_textureFlags);
+    imLog("DEBUG: [SDB] [TEXTURE] (Texture Flags) {08X}", m_textureFlags);
     return true;
 }

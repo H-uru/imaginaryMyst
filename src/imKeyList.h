@@ -27,7 +27,7 @@ public:
 
     void read(imStream* stream);
 
-    imString name() const
+    const ST::string& name() const
     { return m_name; }
 
     unsigned char type() const
@@ -37,7 +37,7 @@ public:
     { return (m_type != 0xFF); }
 
 private:
-    imString m_name;
+    ST::string m_name;
     unsigned char m_type;
 };
 

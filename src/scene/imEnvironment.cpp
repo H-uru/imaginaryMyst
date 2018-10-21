@@ -27,12 +27,12 @@ bool imEnvironment::read(imStream* stream, imSceneIndex* idx)
     stream->read32();   // Data size
 
     m_keys.read(stream);
-    imLog("DEBUG: [SDB] [ENVIRONMENT] '%s' (%u)", m_keys.self().name().data(),
+    imLog("DEBUG: [SDB] [ENVIRONMENT] '{}' ({})", m_keys.self().name(),
           m_keys.refs().size());
 
     m_environFlags = stream->read32();
     if ((m_environFlags & kHas_200) != 0)
-        imLog("DEBUG: [SDB] [ENVIRONMENT] (+14C) %f", stream->readFloat());
+        imLog("DEBUG: [SDB] [ENVIRONMENT] (+14C) {}", stream->readFloat());
     if ((m_environFlags & kHasFogDepth) != 0)
         m_fogDepth = stream->readFloat();
     if ((m_environFlags & kHasFogDensity) != 0)
@@ -49,10 +49,10 @@ bool imEnvironment::read(imStream* stream, imSceneIndex* idx)
         imLog("DEBUG: [SDB] [ENVIRONMENT] (Vector3)");
     }
     if ((m_environFlags & kHas_4) != 0)
-        imLog("DEBUG: [SDB] [ENVIRONMENT] (+130) %f", stream->readFloat());
+        imLog("DEBUG: [SDB] [ENVIRONMENT] (+130) {}", stream->readFloat());
 
     if ((m_environFlags & 0xA000) != 0) {
-        imLog("ERROR: Environment flags 0x%X not currently supported",
+        imLog("ERROR: Environment flags 0x{X} not currently supported",
               (m_environFlags & 0xA000));
         return false;
     }
