@@ -14,6 +14,8 @@
  * along with imaginaryMyst.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <iostream>
+#include <GL/glu.h>
 #include "imCommon.h"
 #include "scene/imSceneDatabase.h"
 #include "scene/imSceneIndex.h"
@@ -26,15 +28,15 @@
 
 imString s_rootPath;
 imVfs s_vfs;
-SDL_Surface* s_display;
+SDL_Window *s_display;
 
 PFNGLCOMPRESSEDTEXIMAGE2DARBPROC GLX_CompressedTexImage2D = 0;
 
 #ifdef WIN32
-  int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
-                     LPSTR lpCmdLine, int nCmdShow)
+int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
+                   LPSTR lpCmdLine, int nCmdShow)
 #else
-  int main(int argc, char* argv[])
+int main(int argc, char *argv[])
 #endif
 {
     /* Initialize SDL */
@@ -58,7 +60,7 @@ PFNGLCOMPRESSEDTEXIMAGE2DARBPROC GLX_CompressedTexImage2D = 0;
         while (!settings.eof()) {
             imString ln = settings.readLine();
             size_t commentPos = ln.find('#');
-            if (commentPos != (size_t)-1)
+            if (commentPos != (static_cast<size_t>(-1)))
                 ln = ln.left(commentPos);
             ln = ln.strip();
             if (ln.length() == 0) {
@@ -73,7 +75,7 @@ PFNGLCOMPRESSEDTEXIMAGE2DARBPROC GLX_CompressedTexImage2D = 0;
                 winHeight = strtol(ln.data(), NULL, 0);
             } else {
                 size_t cmdPos = ln.find(' ');
-                if (cmdPos != (size_t)-1)
+                if (cmdPos != (static_cast<size_t>(-1)))
                     ln = ln.left(cmdPos);
                 imLog("Unrecognized option in config: %s", ln.data());
             }
@@ -108,7 +110,7 @@ PFNGLCOMPRESSEDTEXIMAGE2DARBPROC GLX_CompressedTexImage2D = 0;
 
     imLog("Reading Scene Database...");
     imSceneDatabase sdb;
-    imStream* stream = s_vfs.open("/scn/myst.idx");
+    imStream *stream = s_vfs.open("/scn/myst.idx");
     if (stream == 0) {
         imLog("Fatal: Cannot open Scene Database!");
         return 1;
@@ -138,25 +140,13 @@ PFNGLCOMPRESSEDTEXIMAGE2DARBPROC GLX_CompressedTexImage2D = 0;
     }
 
     // Create a window for the game
-    s_display = SDL_SetVideoMode(winWidth, winHeight, 32,
-                                 SDL_HWSURFACE | SDL_DOUBLEBUF | SDL_OPENGL);
-    SDL_WM_SetCaption("imaginaryMyst Alpha", "imaginaryMyst");
+    s_display = SDL_CreateWindow("imaginaryMyst Alpha", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, winWidth,
+                                 winHeight, SDL_WINDOW_OPENGL);
 
-    /*
-    imString extList = (const char*)glGetString(GL_EXTENSIONS);
-    while (!extList.isEmpty()) {
-        size_t sp = extList.find(' ');
-        if (sp == (size_t)-1) {
-            imLog("* %s", extList.data());
-            break;
-        }
-        imLog("* %s", extList.left(sp).data());
-        extList = extList.mid(sp + 1);
-    }
-    */
+    SDL_GLContext glContext = SDL_GL_CreateContext(s_display);
 
     GLX_CompressedTexImage2D = (PFNGLCOMPRESSEDTEXIMAGE2DARBPROC)
-        SDL_GL_GetProcAddress("glCompressedTexImage2DARB");
+            SDL_GL_GetProcAddress("glCompressedTexImage2DARB");
     if (GLX_CompressedTexImage2D == 0)
         imMipmap::s_noDXTCompression = true;
 
@@ -166,12 +156,13 @@ PFNGLCOMPRESSEDTEXIMAGE2DARBPROC GLX_CompressedTexImage2D = 0;
     glViewport(0, 0, winWidth, winHeight);
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    gluPerspective(45.0f, (float)winWidth/(float)winHeight, 0.1f, 10000.0f);
+    gluPerspective(45.0f, (static_cast<float>(winWidth)) / (static_cast<float>(winHeight)), 0.1f, 10000.0f);
     glEnable(GL_TEXTURE_2D);
     glDisable(GL_CULL_FACE);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+
 
     imLog("DEBUG: Reading CreditsScene03Top.hsm...");
     imMipmap img;
@@ -193,16 +184,16 @@ PFNGLCOMPRESSEDTEXIMAGE2DARBPROC GLX_CompressedTexImage2D = 0;
     glTexCoord2f(0.0f, 1.0f);
     glVertex3f(-1.0f, -1.0f, 0.0f);
     glTexCoord2f(0.0f, 0.0f);
-    glVertex3f(-1.0f,  1.0f, 0.0f);
+    glVertex3f(-1.0f, 1.0f, 0.0f);
     glTexCoord2f(1.0f, 0.0f);
-    glVertex3f( 1.0f,  1.0f, 0.0f);
+    glVertex3f(1.0f, 1.0f, 0.0f);
     glTexCoord2f(1.0f, 1.0f);
-    glVertex3f( 1.0f, -1.0f, 0.0f);
+    glVertex3f(1.0f, -1.0f, 0.0f);
     glEnd();
 
-    SDL_GL_SwapBuffers();
+    SDL_GL_SwapWindow(s_display);
     SDL_Delay(3000);
-    SDL_FreeSurface(s_display);
+    SDL_GL_DeleteContext(glContext);
 
     SDL_Quit();
     return 0;

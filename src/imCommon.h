@@ -17,8 +17,8 @@
 #ifndef _IM_COMMON_H
 #define _IM_COMMON_H
 
-#include <SDL.h>
-#include <SDL_opengl.h>
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_opengl.h>
 #include "vfs/imVfs.h"
 
 void imLog(const char* message, ...);
@@ -27,7 +27,7 @@ void imLog(const char* message, va_list args);
 extern imString s_rootPath;
 extern imVfs s_vfs;
 extern FILE* s_logFile;
-extern SDL_Surface* s_display;
+extern SDL_Window* s_display;
 
 /* OpenGL Extensions */
 extern PFNGLCOMPRESSEDTEXIMAGE2DARBPROC GLX_CompressedTexImage2D;

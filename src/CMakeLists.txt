@@ -43,8 +43,8 @@ source_group("Source Files" FILES ${imCommon_SOURCES})
 
 add_executable(imaginaryMyst WIN32 ${imCommon_HEADERS} ${imCommon_SOURCES})
 target_link_libraries(imaginaryMyst imAnim imScene imSound imSurface imVfs)
-target_link_libraries(imaginaryMyst squish)
-target_link_libraries(imaginaryMyst ${SDL_LIBRARY} ${OPENGL_LIBRARIES})
+target_link_libraries(imaginaryMyst squish SDL2 SDL2main)
+target_link_libraries(imaginaryMyst ${OPENGL_LIBRARIES})
 target_link_libraries(imaginaryMyst ${ZLIB_LIBRARIES})
 
 install(TARGETS imaginaryMyst RUNTIME DESTINATION bin)
