@@ -36,7 +36,6 @@ PFNGLCOMPRESSEDTEXIMAGE2DARBPROC GLX_CompressedTexImage2D = 0;
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
                    LPSTR lpCmdLine, int nCmdShow)
 #else
-
 int main(int argc, char *argv[])
 #endif
 {
@@ -61,7 +60,7 @@ int main(int argc, char *argv[])
         while (!settings.eof()) {
             imString ln = settings.readLine();
             size_t commentPos = ln.find('#');
-            if (commentPos != (size_t) -1)
+            if (commentPos != (static_cast<size_t>(-1)))
                 ln = ln.left(commentPos);
             ln = ln.strip();
             if (ln.length() == 0) {
@@ -76,7 +75,7 @@ int main(int argc, char *argv[])
                 winHeight = strtol(ln.data(), NULL, 0);
             } else {
                 size_t cmdPos = ln.find(' ');
-                if (cmdPos != (size_t) -1)
+                if (cmdPos != (static_cast<size_t>(-1)))
                     ln = ln.left(cmdPos);
                 imLog("Unrecognized option in config: %s", ln.data());
             }
@@ -144,11 +143,6 @@ int main(int argc, char *argv[])
     s_display = SDL_CreateWindow("imaginaryMyst Alpha", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, winWidth,
                                  winHeight, SDL_WINDOW_OPENGL);
 
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG);
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
-
-
     SDL_GLContext glContext = SDL_GL_CreateContext(s_display);
 
     GLX_CompressedTexImage2D = (PFNGLCOMPRESSEDTEXIMAGE2DARBPROC)
@@ -162,7 +156,7 @@ int main(int argc, char *argv[])
     glViewport(0, 0, winWidth, winHeight);
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    gluPerspective(45.0f, (float) winWidth / (float) winHeight, 0.1f, 10000.0f);
+    gluPerspective(45.0f, (static_cast<float>(winWidth)) / (static_cast<float>(winHeight)), 0.1f, 10000.0f);
     glEnable(GL_TEXTURE_2D);
     glDisable(GL_CULL_FACE);
     glEnable(GL_BLEND);

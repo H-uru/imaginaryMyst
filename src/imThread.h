@@ -17,7 +17,7 @@
 #ifndef _IM_THREAD_H
 #define _IM_THREAD_H
 
-#include <SDL_thread.h>
+#include <SDL2/SDL_thread.h>
 
 class imMutex {
 public:
