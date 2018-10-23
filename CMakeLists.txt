@@ -43,6 +43,13 @@ set_package_properties(SDL2 PROPERTIES
     TYPE REQUIRED
 )
 
+find_package(GLM REQUIRED)
+set_package_properties(GLM PROPERTIES
+    URL "https://glm.g-truc.net/"
+    DESCRIPTION "OpenGL Mathematics library"
+    TYPE REQUIRED
+)
+
 find_package(ZLIB REQUIRED)
 set_package_properties(ZLIB PROPERTIES
     URL "http://www.zlib.net"
@@ -61,7 +68,7 @@ include_directories(${STRING_THEORY_INCLUDE_DIRS})
 feature_summary(WHAT ALL FATAL_ON_MISSING_REQUIRED_PACKAGES)
 include_directories(${GLEW_INCLUDE_DIR})
 include_directories(${OPENGL_INCLUDE_DIR})
-include_directories(${SDL2_INCLUDE_DIRS})
+include_directories(${GLM_INCLUDE_DIRS})
 include_directories(${ZLIB_INCLUDE_DIR})
 
 # 3rd party Squish library for DXT codecs
