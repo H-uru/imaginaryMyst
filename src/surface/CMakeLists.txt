@@ -32,7 +32,9 @@ set(imSurface_SOURCES
 source_group("Header Files" FILES ${imSurface_HEADERS})
 source_group("Source Files" FILES ${imSurface_SOURCES})
 
+include_directories(${LIBSQUISH_INCLUDE_DIR})
+
 add_library(imSurface STATIC ${imSurface_HEADERS} ${imSurface_SOURCES})
 target_link_libraries(imSurface imAnim)
 target_link_libraries(imSurface imScene)    # WARNING: Circular dependency!
-target_link_libraries(imSurface squish SDL2::SDL2)
+target_link_libraries(imSurface ${LIBSQUISH_LIBRARIES} SDL2::SDL2)

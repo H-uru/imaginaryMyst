@@ -30,6 +30,13 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES ".*Clang")
     endif()
 endif()
 
+find_package(LibSquish REQUIRED)
+set_package_properties(LibSquish PROPERTIES
+    URL "https://sourceforge.net/projects/libsquish/"
+    DESCRIPTION "DXT Compression library"
+    TYPE REQUIRED
+)
+
 find_package(OpenGL REQUIRED)
 set_package_properties(OpenGL PROPERTIES
     DESCRIPTION "libGL and libGLU libraries"
@@ -70,10 +77,6 @@ include_directories(${GLEW_INCLUDE_DIR})
 include_directories(${OPENGL_INCLUDE_DIR})
 include_directories(${GLM_INCLUDE_DIRS})
 include_directories(${ZLIB_INCLUDE_DIR})
-
-# 3rd party Squish library for DXT codecs
-include_directories(libsquish)
-add_subdirectory(libsquish)
 
 # The imaginaryMyst application
 add_subdirectory(src)
