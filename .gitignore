@@ -8,3 +8,4 @@
 *.a
 *.cbp
 *.dni
+CMakeCache.txt

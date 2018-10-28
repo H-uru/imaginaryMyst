@@ -14,7 +14,10 @@
  * along with imaginaryMyst.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <GL/glew.h>
 #include <iostream>
+#include <GL/glu.h>
+#include <graphics/imPipeline.h>
 #include "imCommon.h"
 #include "scene/imSceneDatabase.h"
 #include "scene/imSceneIndex.h"
@@ -29,6 +32,92 @@
 #  include <direct.h>
 #endif
 
+static void openglCallbackFunction(
+        GLenum source,
+        GLenum type,
+        GLuint id,
+        GLenum severity,
+        GLsizei length,
+        const GLchar *message,
+        const void *userParam
+) {
+    // ignore non-significant error/warning codes
+    if (id == 131169 || id == 131185 || id == 131218 || id == 131204) return;
+
+    std::cout << "---------------" << std::endl;
+    std::cout << "Debug message (" << id << "): " << message << std::endl;
+
+    switch (source) {
+        case GL_DEBUG_SOURCE_API:
+            std::cout << "Source: API";
+            break;
+        case GL_DEBUG_SOURCE_WINDOW_SYSTEM:
+            std::cout << "Source: Window System";
+            break;
+        case GL_DEBUG_SOURCE_SHADER_COMPILER:
+            std::cout << "Source: Shader Compiler";
+            break;
+        case GL_DEBUG_SOURCE_THIRD_PARTY:
+            std::cout << "Source: Third Party";
+            break;
+        case GL_DEBUG_SOURCE_APPLICATION:
+            std::cout << "Source: Application";
+            break;
+        case GL_DEBUG_SOURCE_OTHER:
+            std::cout << "Source: Other";
+            break;
+    }
+    std::cout << std::endl;
+
+    switch (type) {
+        case GL_DEBUG_TYPE_ERROR:
+            std::cout << "Type: Error";
+            break;
+        case GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR:
+            std::cout << "Type: Deprecated Behaviour";
+            break;
+        case GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR:
+            std::cout << "Type: Undefined Behaviour";
+            break;
+        case GL_DEBUG_TYPE_PORTABILITY:
+            std::cout << "Type: Portability";
+            break;
+        case GL_DEBUG_TYPE_PERFORMANCE:
+            std::cout << "Type: Performance";
+            break;
+        case GL_DEBUG_TYPE_MARKER:
+            std::cout << "Type: Marker";
+            break;
+        case GL_DEBUG_TYPE_PUSH_GROUP:
+            std::cout << "Type: Push Group";
+            break;
+        case GL_DEBUG_TYPE_POP_GROUP:
+            std::cout << "Type: Pop Group";
+            break;
+        case GL_DEBUG_TYPE_OTHER:
+            std::cout << "Type: Other";
+            break;
+    }
+    std::cout << std::endl;
+
+    switch (severity) {
+        case GL_DEBUG_SEVERITY_HIGH:
+            std::cout << "Severity: high";
+            break;
+        case GL_DEBUG_SEVERITY_MEDIUM:
+            std::cout << "Severity: medium";
+            break;
+        case GL_DEBUG_SEVERITY_LOW:
+            std::cout << "Severity: low";
+            break;
+        case GL_DEBUG_SEVERITY_NOTIFICATION:
+            std::cout << "Severity: notification";
+            break;
+    }
+    std::cout << std::endl;
+    std::cout << std::endl;
+}
+
 ST::string s_rootPath;
 imVfs s_vfs;
 SDL_Window *s_display;
@@ -41,11 +130,17 @@ PFNGLCOMPRESSEDTEXIMAGE2DARBPROC GLX_CompressedTexImage2D = 0;
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
                    LPSTR lpCmdLine, int nCmdShow)
 #else
+
 int main(int argc, char *argv[])
 #endif
 {
     /* Initialize SDL */
     SDL_Init(SDL_INIT_AUDIO | SDL_INIT_VIDEO);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
+    SDL_GL_SetAttribute(
+            SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG
+    );
 
 #ifdef WIN32
     s_logFile = fopen("imaginaryMyst.log", "wb");
@@ -144,37 +239,32 @@ int main(int argc, char *argv[])
         delete stream;
     }
 
+
     // Create a window for the game
-    s_display = SDL_CreateWindow("imaginaryMyst Alpha",
-                          SDL_WINDOWPOS_CENTERED,
-                          SDL_WINDOWPOS_CENTERED,
-                          winWidth, winHeight,
-                          SDL_WINDOW_OPENGL);
+    s_display = SDL_CreateWindow("imaginaryMyst Alpha", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, winWidth,
+                                 winHeight, SDL_WINDOW_OPENGL);
+
+
     SDL_GLContext glContext = SDL_GL_CreateContext(s_display);
-    glm::mat4 projection = glm::perspective(
-      45.0f,                                // FoV
-      (float)winWidth / (float)winHeight,   // Aspect Ratio
-      0.1f,                                 // Near Plane
-      10000.0f);                            // Far Plane
+    glewExperimental = true;
+    if (glewInit() != GLEW_OK) {
+        fprintf(stderr, "Failed to initialize GLEW\n");
+        return -1;
+    }
+    glEnable(GL_DEBUG_OUTPUT);
+    glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
+    glDebugMessageCallback(openglCallbackFunction, nullptr);
+    glDebugMessageControl(
+            GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, NULL, true
+    );
+
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     GLX_CompressedTexImage2D = (PFNGLCOMPRESSEDTEXIMAGE2DARBPROC)
             SDL_GL_GetProcAddress("glCompressedTexImage2DARB");
     if (GLX_CompressedTexImage2D == 0)
         imMipmap::s_noDXTCompression = true;
-
-    glShadeModel(GL_SMOOTH);
-    glClearDepth(1.0f);
-    glClearColor(0.0f, 0.5f, 0.5f, 1.0f);
-    glViewport(0, 0, winWidth, winHeight);
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    glLoadMatrixf(glm::value_ptr(projection));
-    glEnable(GL_TEXTURE_2D);
-    glDisable(GL_CULL_FACE);
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
-
 
     imLog("DEBUG: Reading CreditsScene03Top.hsm...");
     imMipmap img;
@@ -182,25 +272,17 @@ int main(int argc, char *argv[])
     if (stream != 0) {
         img.read(stream);
         delete stream;
-        img.prepare();
     } else {
         imLog("Error reading HSM file");
     }
+    img.TEST_ExportDDS("test1.dds");
+    imPipeline pipeline;
+    img.prepare();
+    pipeline.initialize();
 
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glTranslatef(0.0f, 0.0f, -4.0f);
     img.bind();
+    pipeline.render();
 
-    glBegin(GL_QUADS);
-    glTexCoord2f(0.0f, 1.0f);
-    glVertex3f(-1.0f, -1.0f, 0.0f);
-    glTexCoord2f(0.0f, 0.0f);
-    glVertex3f(-1.0f, 1.0f, 0.0f);
-    glTexCoord2f(1.0f, 0.0f);
-    glVertex3f(1.0f, 1.0f, 0.0f);
-    glTexCoord2f(1.0f, 1.0f);
-    glVertex3f(1.0f, -1.0f, 0.0f);
-    glEnd();
 
     SDL_GL_SwapWindow(s_display);
     SDL_Delay(3000);

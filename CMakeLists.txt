@@ -15,10 +15,9 @@
 
 cmake_minimum_required(VERSION 3.0)
 project(imaginaryMyst LANGUAGES CXX)
-
+list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/src/cmake/Modules)
 include(FeatureSummary)
-
-set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+message(${CMAKE_MODULE_PATH})
 
 option(ENABLE_SSE2 "Build with SSE2 SIMD instructions" ON)
 
@@ -70,6 +69,8 @@ include_directories(${GLEW_INCLUDE_DIR})
 include_directories(${OPENGL_INCLUDE_DIR})
 include_directories(${GLM_INCLUDE_DIRS})
 include_directories(${ZLIB_INCLUDE_DIR})
+include_directories(${GLM_INCLUDE_DIRS})
+
 
 # 3rd party Squish library for DXT codecs
 include_directories(libsquish)
