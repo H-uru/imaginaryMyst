@@ -15,11 +15,14 @@
  */
 
 #include <iostream>
-#include <GL/glu.h>
 #include "imCommon.h"
 #include "scene/imSceneDatabase.h"
 #include "scene/imSceneIndex.h"
 #include "surface/imMipmap.h"
+
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 #ifdef WIN32
 #  include <windows.h>
@@ -142,10 +145,17 @@ int main(int argc, char *argv[])
     }
 
     // Create a window for the game
-    s_display = SDL_CreateWindow("imaginaryMyst Alpha", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, winWidth,
-                                 winHeight, SDL_WINDOW_OPENGL);
-
+    s_display = SDL_CreateWindow("imaginaryMyst Alpha",
+                          SDL_WINDOWPOS_CENTERED,
+                          SDL_WINDOWPOS_CENTERED,
+                          winWidth, winHeight,
+                          SDL_WINDOW_OPENGL);
     SDL_GLContext glContext = SDL_GL_CreateContext(s_display);
+    glm::mat4 projection = glm::perspective(
+      45.0f,                                // FoV
+      (float)winWidth / (float)winHeight,   // Aspect Ratio
+      0.1f,                                 // Near Plane
+      10000.0f);                            // Far Plane
 
     GLX_CompressedTexImage2D = (PFNGLCOMPRESSEDTEXIMAGE2DARBPROC)
             SDL_GL_GetProcAddress("glCompressedTexImage2DARB");
@@ -158,7 +168,7 @@ int main(int argc, char *argv[])
     glViewport(0, 0, winWidth, winHeight);
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    gluPerspective(45.0f, (static_cast<float>(winWidth)) / (static_cast<float>(winHeight)), 0.1f, 10000.0f);
+    glLoadMatrixf(glm::value_ptr(projection));
     glEnable(GL_TEXTURE_2D);
     glDisable(GL_CULL_FACE);
     glEnable(GL_BLEND);
@@ -176,7 +186,6 @@ int main(int argc, char *argv[])
     } else {
         imLog("Error reading HSM file");
     }
-    //img.TEST_ExportDDS("test.dds");
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glTranslatef(0.0f, 0.0f, -4.0f);
@@ -196,6 +205,7 @@ int main(int argc, char *argv[])
     SDL_GL_SwapWindow(s_display);
     SDL_Delay(3000);
     SDL_GL_DeleteContext(glContext);
+    SDL_DestroyWindow(s_display);
 
     SDL_Quit();
     return 0;
