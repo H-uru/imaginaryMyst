@@ -64,6 +64,8 @@ set_package_properties(string_theory PROPERTIES
 )
 include_directories(${STRING_THEORY_INCLUDE_DIRS})
 
+find_package(GLEW REQUIRED)
+
 feature_summary(WHAT ALL FATAL_ON_MISSING_REQUIRED_PACKAGES)
 include_directories(${GLEW_INCLUDE_DIR})
 include_directories(${OPENGL_INCLUDE_DIR})

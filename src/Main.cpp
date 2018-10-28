@@ -119,6 +119,7 @@ static void openglCallbackFunction(
 }
 
 ST::string s_rootPath;
+
 imVfs s_vfs;
 SDL_Window *s_display;
 
@@ -261,6 +262,21 @@ int main(int argc, char *argv[])
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+    glewExperimental = true;
+    if (glewInit() != GLEW_OK) {
+        fprintf(stderr, "Failed to initialize GLEW\n");
+        return -1;
+    }
+    glEnable(GL_DEBUG_OUTPUT);
+    glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
+    glDebugMessageCallback(openglCallbackFunction, nullptr);
+    glDebugMessageControl(
+            GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, NULL, true
+    );
+
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
     GLX_CompressedTexImage2D = (PFNGLCOMPRESSEDTEXIMAGE2DARBPROC)
             SDL_GL_GetProcAddress("glCompressedTexImage2DARB");
     if (GLX_CompressedTexImage2D == 0)
@@ -280,6 +296,8 @@ int main(int argc, char *argv[])
     img.prepare();
     pipeline.initialize();
 
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glTranslatef(0.0f, 0.0f, -4.0f);
     img.bind();
     pipeline.render();
 
