@@ -2,7 +2,6 @@
 #define IMAGINARYMYST_IMPIPELINE_H
 
 
-#include <imString.h>
 #include <GL/gl.h>
 #include <vector>
 #include <glm/glm.hpp>

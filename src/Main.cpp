@@ -122,7 +122,7 @@ ST::string s_rootPath;
 
 imVfs s_vfs;
 SDL_Window *s_display;
-SDL_GLContext s_glContext
+SDL_GLContext s_glContext;
 FILE *s_logFile = stderr;
 
 PFNGLCOMPRESSEDTEXIMAGE2DARBPROC GLX_CompressedTexImage2D = 0;
@@ -249,21 +249,13 @@ int main(int argc, char *argv[])
 
 
     // Create a window for the game
-<<<<<<< HEAD
-    s_display = SDL_CreateWindow("imaginaryMyst Alpha", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, winWidth,
-                                 winHeight, SDL_WINDOW_OPENGL);
 
-
-    SDL_GLContext glContext = SDL_GL_CreateContext(s_display);
-=======
     s_display = SDL_CreateWindow("imaginaryMyst Alpha",
                                  SDL_WINDOWPOS_CENTERED,
                                  SDL_WINDOWPOS_CENTERED,
                                  winWidth, winHeight,
                                  SDL_WINDOW_OPENGL);
     s_glContext = SDL_GL_CreateContext(s_display);
-
->>>>>>> CHeck for opengl version, minimum require 3, and only enable debugging when supported
     glewExperimental = true;
     if (glewInit() != GLEW_OK) {
         fprintf(stderr, "Failed to initialize GLEW\n");
@@ -336,6 +328,6 @@ int main(int argc, char *argv[])
 
     SDL_GL_SwapWindow(s_display);
     SDL_Delay(3000);
-cleanup();
+    cleanup();
     return 0;
 }

@@ -15,7 +15,7 @@
 
 cmake_minimum_required(VERSION 3.0)
 project(imaginaryMyst LANGUAGES CXX)
-list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/src/cmake/Modules)
+set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
 include(FeatureSummary)
 message(${CMAKE_MODULE_PATH})
 
