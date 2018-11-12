@@ -32,4 +32,3 @@ source_group("Source Files" FILES ${imAnim_SOURCES})
 
 add_library(imAnim STATIC ${imAnim_HEADERS} ${imAnim_SOURCES})
 target_link_libraries(imAnim imVfs)
-target_link_libraries(imAnim SDL2::SDL2)

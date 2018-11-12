@@ -25,4 +25,3 @@ source_group("Header Files" FILES ${imSound_HEADERS})
 source_group("Source Files" FILES ${imSound_SOURCES})
 
 add_library(imSound STATIC ${imSound_HEADERS} ${imSound_SOURCES})
-target_link_libraries(imSound SDL2::SDL2)
