@@ -213,8 +213,11 @@ int main(int argc, char *argv[])
     }
     s_vfs.addDniFile(s_rootPath + "/pera.dni");
 
+    s_vfs.debug_print();
+
     // Add the game dir last, so duplicates use the physical copy
     s_vfs.addPhysicalPath(s_rootPath);
+
 
     imLog("Reading Scene Database...");
     imSceneDatabase sdb;
@@ -271,7 +274,7 @@ int main(int argc, char *argv[])
 
     if (glMajorVersion < 3) {
         fprintf(stderr,
-                "ERROR OoenGL version too low, only OpenGL 3 or higher are supported. Opengl version detected %d.%d.",
+                "ERROR OpenGL version too low, only OpenGL 3 or higher are supported. Opengl version detected %d.%d.",
                 glMajorVersion, glMinorVersion);
         cleanup();
         return 1;
