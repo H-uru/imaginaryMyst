@@ -1,4 +1,21 @@
+/* This file is part of imaginaryMyst.
+ *
+ * imaginaryMyst is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * imaginaryMyst is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with imaginaryMyst.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 #define GLM_ENABLE_EXPERIMENTAL
+
 #include <GL/glew.h>
 #include <GL/gl.h>
 #include <glm/gtx/transform.hpp>
@@ -6,14 +23,14 @@
 #include <surface/imMipmap.h>
 #include "imPipeline.h"
 
-void imPipeline::initialize() {
-
+void imPipeline::initialize()
+{
     m_vertexShaderId = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(m_vertexShaderId, 1, const_cast<const GLchar **>(&m_vertexShader), NULL);
+    glShaderSource(m_vertexShaderId, 1, &m_vertexShader, NULL);
     glCompileShader(m_vertexShaderId);
 
     m_fragmentShaderId = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(m_fragmentShaderId, 1, const_cast<const GLchar **>(&m_fragmentShader), NULL);
+    glShaderSource(m_fragmentShaderId, 1, &m_fragmentShader, NULL);
     glCompileShader(m_fragmentShaderId);
     m_programId = glCreateProgram();
     glAttachShader(m_programId, m_fragmentShaderId);
@@ -39,7 +56,8 @@ void imPipeline::initialize() {
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
-void imPipeline::render() {
+void imPipeline::render()
+{
     glLinkProgram(m_programId);
     glUseProgram(m_programId);
     glEnableVertexAttribArray(m_positionLoc);
@@ -52,7 +70,8 @@ void imPipeline::render() {
     glBindVertexArray(0);
 }
 
-imPipeline::~imPipeline() {
+imPipeline::~imPipeline()
+{
     glUseProgram(0);
     glDetachShader(m_programId, m_vertexShaderId);
     glDetachShader(m_programId, m_fragmentShaderId);

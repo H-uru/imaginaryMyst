@@ -17,7 +17,6 @@ cmake_minimum_required(VERSION 3.0)
 project(imaginaryMyst LANGUAGES CXX)
 set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
 include(FeatureSummary)
-message(${CMAKE_MODULE_PATH})
 
 option(ENABLE_SSE2 "Build with SSE2 SIMD instructions" ON)
 
@@ -65,6 +64,11 @@ set_package_properties(string_theory PROPERTIES
 include_directories(${STRING_THEORY_INCLUDE_DIRS})
 
 find_package(GLEW REQUIRED)
+set_package_properties(GLM PROPERTIES
+    URL "https://github.com/nigels-com/glew"
+    DESCRIPTION "The OpenGL Extension Wrangler Library"
+    TYPE REQUIRED
+    )
 
 feature_summary(WHAT ALL FATAL_ON_MISSING_REQUIRED_PACKAGES)
 include_directories(${GLEW_INCLUDE_DIR})

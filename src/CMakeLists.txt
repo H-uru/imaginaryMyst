@@ -27,13 +27,15 @@ set(imCommon_HEADERS
     imKeyList.h
     imRef.h
     imThread.h
+    graphics/imPipeline.h
 )
 
 set(imCommon_SOURCES
     imGeometry3.cpp
     imKeyList.cpp
     Main.cpp
-        graphics/imPipeline.cpp graphics/imPipeline.h)
+    graphics/imPipeline.cpp
+)
 
 source_group("Header Files" FILES ${imCommon_HEADERS})
 source_group("Source Files" FILES ${imCommon_SOURCES})

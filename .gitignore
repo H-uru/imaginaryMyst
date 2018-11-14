@@ -2,10 +2,3 @@
 .*.swo
 *.orig
 .idea/
-**/CMakeFiles/**
-**/Makefile
-*.cmake
-*.a
-*.cbp
-*.dni
-CMakeCache.txt
