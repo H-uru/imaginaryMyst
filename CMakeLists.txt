@@ -42,6 +42,16 @@ set_package_properties(SDL2 PROPERTIES
     DESCRIPTION "Simple DirectMedia Layer"
     TYPE REQUIRED
 )
+if(SDL2_FOUND AND TARGET SDL2::SDL2)
+    # Map the CMake-style export targets to the classic variables
+    # used by the autotools-generated CMake configuration.
+    get_target_property(SDL2_INCLUDE_DIRS SDL2::SDL2 INTERFACE_INCLUDE_DIRECTORIES)
+    set(SDL2_LIBRARIES SDL2::SDL2 SDL2::SDL2main)
+else()
+    # The autotools-generated cmake file may contain trailing whitespace,
+    # which is treated as an error in CMake with CMP0004
+    string(STRIP "${SDL2_LIBRARIES}" SDL2_LIBRARIES)
+endif()
 
 find_package(GLM REQUIRED)
 set_package_properties(GLM PROPERTIES
@@ -69,6 +79,7 @@ feature_summary(WHAT ALL FATAL_ON_MISSING_REQUIRED_PACKAGES)
 include_directories(${GLEW_INCLUDE_DIR})
 include_directories(${OPENGL_INCLUDE_DIR})
 include_directories(${GLM_INCLUDE_DIRS})
+include_directories(${SDL2_INCLUDE_DIRS})
 include_directories(${ZLIB_INCLUDE_DIR})
 
 # 3rd party Squish library for DXT codecs
