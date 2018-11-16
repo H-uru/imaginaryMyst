@@ -20,6 +20,7 @@
 #include "imTexture.h"
 #include "imGeometry3.h"
 #include "anim/imAnimBehavior.h"
+#include <memory>
 
 struct imColorRGBA {
     imColorRGBA() : m_red(0.0f), m_green(0.0f), m_blue(0.0f), m_alpha(0.0f)
@@ -193,7 +194,7 @@ protected:
     imAnimController m_animAmbient;
     imAnimController m_animColor;
     imAnimController m_animUVW;
-    std::vector<imRef<imTexture> > m_textures;
+    std::vector<std::shared_ptr<imTexture>> m_textures;
 };
 
 #endif

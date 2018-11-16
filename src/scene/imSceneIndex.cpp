@@ -67,7 +67,7 @@ bool imSceneIndex::read(imStream* stream)
     m_textures.resize(stream->read32());
     for (size_t i=0; i<m_textures.size(); i++) {
         imLog("DEBUG: [SDB] Texture #{}", i);
-        m_textures[i] = new imTexture();
+        m_textures[i] = std::make_shared<imTexture>();
         if (!m_textures[i]->read(stream))
             return false;
     }
@@ -75,7 +75,7 @@ bool imSceneIndex::read(imStream* stream)
     m_materials.resize(stream->read32());
     for (size_t i=0; i<m_materials.size(); i++) {
         imLog("DEBUG: [SDB] Material #{}", i);
-        m_materials[i] = new imMaterial();
+        m_materials[i] = std::make_shared<imMaterial>();
         if (!m_materials[i]->read(stream, this))
             return false;
     }
@@ -97,7 +97,7 @@ bool imSceneIndex::read(imStream* stream)
     m_sounds.resize(stream->read32());
     for (size_t i=0; i<m_sounds.size(); i++) {
         imLog("DEBUG: [SDB] Sound Source #{}", i);
-        m_sounds[i] = new imSoundSource();
+        m_sounds[i] = std::make_shared<imSoundSource>();
         if (!m_sounds[i]->read(stream))
             return false;
     }

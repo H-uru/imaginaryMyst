@@ -15,7 +15,6 @@
  */
 
 #include "imVfs.h"
-#include "imRef.h"
 
 #define DIRT_MAGIC      0x74726944
 #define DIRT_VERSION    0x00010000
@@ -40,7 +39,7 @@ static ST::string read_zstring(imStream* stream)
     return str;
 }
 
-static imVfsEntry* read_dnidirs(dni_Context* dni, unsigned int offset)
+static std::shared_ptr<imVfsEntry> read_dnidirs(dni_Context* dni, unsigned int offset)
 {
     dni->m_stream->seek(offset);
     ST::string name = read_zstring(dni->m_stream);
@@ -50,27 +49,28 @@ static imVfsEntry* read_dnidirs(dni_Context* dni, unsigned int offset)
         size_t size = dni->m_stream->read32();
         size_t voffset = dni->m_stream->read32();
         size_t csize = dni->m_stream->read32();
-        return new imVfsFileEntry(name, imVfsEntry::Type_VFile, vext, voffset,
-                                  size, csize, dni->m_location);
+        return std::make_shared<imVfsFileEntry>(name, imVfsEntry::Type_VFile,
+                        vext, voffset, size, csize, dni->m_location);
     } else {
         size_t count = dni->m_stream->read32();
-        std::list<imRef<imVfsEntry> > children;
+        std::vector<std::shared_ptr<imVfsEntry>> children;
+        children.reserve(count);
         for (size_t i=0; i<count; i++) {
             size_t dirOff = dni->m_stream->read32();
             size_t psave = dni->m_stream->tell();
             children.push_back(read_dnidirs(dni, dirOff));
             dni->m_stream->seek(psave);
         }
-        return new imVfsDirEntry(name, children);
+        return std::make_shared<imVfsDirEntry>(name, children);
     }
 }
 
-imVfsEntry* read_dnifile(imStream* stream, const ST::string& location)
+std::shared_ptr<imVfsEntry> read_dnifile(imStream* stream, const ST::string& location)
 {
     if (stream->read32() != DIRT_MAGIC)
-        return 0;
+        return nullptr;
     if (stream->read32() != DIRT_VERSION)
-        return 0;
+        return nullptr;
 
     dni_Context dni;
     dni.m_dirOffset = stream->read32();

@@ -25,26 +25,22 @@
 
 class imSceneIndex {
 public:
-    imSceneIndex()
-    { }
-
-    ~imSceneIndex()
-    { }
+    imSceneIndex() { }
 
     bool read(imStream* stream);
 
-    imRef<imTexture> texture(unsigned int id)
+    std::shared_ptr<imTexture> texture(unsigned int id)
     {
         if (id < m_textures.size())
             return m_textures[id];
-        return 0;
+        return nullptr;
     }
 
-    imRef<imMaterial> material(unsigned int id)
+    std::shared_ptr<imMaterial> material(unsigned int id)
     {
         if (id < m_materials.size())
             return m_materials[id];
-        return 0;
+        return nullptr;
     }
 
 private:
@@ -52,10 +48,10 @@ private:
     ST::string m_page;
     std::vector<ST::string> m_sceneRefs;
     std::vector<ST::string> m_keyRefs;
-    std::vector<imRef<imTexture> > m_textures;
-    std::vector<imRef<imMaterial> > m_materials;
+    std::vector<std::shared_ptr<imTexture>> m_textures;
+    std::vector<std::shared_ptr<imMaterial>> m_materials;
     imEnvironment m_environment;
-    std::vector<imRef<imSoundSource> > m_sounds;
+    std::vector<std::shared_ptr<imSoundSource>> m_sounds;
 };
 
 #endif

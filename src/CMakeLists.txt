@@ -25,7 +25,6 @@ set(imCommon_HEADERS
     imCommon.h
     imGeometry3.h
     imKeyList.h
-    imRef.h
     imThread.h
 )
 

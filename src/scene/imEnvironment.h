@@ -34,11 +34,7 @@ public:
         kHasRenderProcs = (1<<15),
     };
 
-    imEnvironment()
-    { }
-
-    ~imEnvironment()
-    { }
+    imEnvironment() { }
 
     bool read(imStream* stream, class imSceneIndex* idx);
 
@@ -47,7 +43,7 @@ private:
     unsigned int m_environFlags;
     float m_fogDensity, m_fogDepth, m_yon;
     imColorRGBA m_fogColor, m_clearColor;
-    imRef<imMaterial> m_material;
+    std::shared_ptr<imMaterial> m_material;
     std::vector<imKey> m_refs;
 };
 

@@ -18,15 +18,10 @@
 #define _IM_TEXTURE_H
 
 #include "imKeyList.h"
-#include "imRef.h"
 
-class imTexture : public imDataRef {
+class imTexture {
 public:
-    imTexture() : m_readFlags(0), m_textureFlags(0)
-    { }
-
-    ~imTexture()
-    { }
+    imTexture() : m_readFlags(), m_textureFlags() { }
 
     bool read(imStream* stream);
 
