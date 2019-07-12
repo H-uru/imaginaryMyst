@@ -27,12 +27,14 @@ set(imCommon_HEADERS
     imKeyList.h
     imRef.h
     imThread.h
+    graphics/imPipeline.h
 )
 
 set(imCommon_SOURCES
     imGeometry3.cpp
     imKeyList.cpp
     Main.cpp
+    graphics/imPipeline.cpp
 )
 
 source_group("Header Files" FILES ${imCommon_HEADERS})
@@ -44,5 +46,6 @@ target_link_libraries(imaginaryMyst squish ${SDL2_LIBRARIES})
 target_link_libraries(imaginaryMyst ${OPENGL_LIBRARIES})
 target_link_libraries(imaginaryMyst ${ZLIB_LIBRARIES})
 target_link_libraries(imaginaryMyst ${STRING_THEORY_LIBRARIES})
+target_link_libraries(imaginaryMyst ${GLEW_LIBRARY})
 
 install(TARGETS imaginaryMyst RUNTIME DESTINATION bin)
