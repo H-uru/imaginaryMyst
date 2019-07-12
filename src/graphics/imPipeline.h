@@ -22,7 +22,7 @@
 #include <vector>
 #include <glm/glm.hpp>
 
-#include "../surface/imMipmap.h"
+#include "surface/imMipmap.h"
 
 class imPipeline {
 

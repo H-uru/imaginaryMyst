@@ -15,9 +15,9 @@
  */
 
 #include <GL/glew.h>
-#include <iostream>
 #include <GL/glu.h>
-#include <graphics/imPipeline.h>
+#include <iostream>
+#include "graphics/imPipeline.h"
 #include "imCommon.h"
 #include "scene/imSceneDatabase.h"
 #include "scene/imSceneIndex.h"
@@ -137,8 +137,10 @@ int main(int argc, char *argv[])
 {
     /* Initialize SDL */
     SDL_Init(SDL_INIT_AUDIO | SDL_INIT_VIDEO);
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+//    SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG);
+//    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
+//    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
     SDL_GL_SetAttribute(
         SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG
     );
@@ -267,7 +269,7 @@ int main(int argc, char *argv[])
 
     if (glMajorVersion < 3) {
         fprintf(stderr,
-                "ERROR OpenGL version too low, only OpenGL 3 or higher are supported. Opengl version detected %d.%d.",
+                "ERROR OpenGL version too low, only OpenGL 3 or higher are supported. Opengl version detected %d.%d.\n",
                 glMajorVersion, glMinorVersion);
         cleanup();
         return 1;

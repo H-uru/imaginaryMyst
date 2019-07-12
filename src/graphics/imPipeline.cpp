@@ -45,13 +45,13 @@ void imPipeline::initialize()
     glBindBuffer(GL_ARRAY_BUFFER, m_vertexBufferId);
     glBufferData(GL_ARRAY_BUFFER, m_vertices.size() * 3 * sizeof(GLfloat), m_vertices.data(), GL_STATIC_DRAW);
     m_positionLoc = glGetAttribLocation(m_programId, "in_position");
-    glVertexAttribPointer(m_positionLoc, 3, GL_FLOAT, GL_FALSE, 0, (void *) 0);
+    glVertexAttribPointer(m_positionLoc, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
 
     glGenBuffers(1, &m_textureBufferId);
     glBindBuffer(GL_ARRAY_BUFFER, m_textureBufferId);
     glBufferData(GL_ARRAY_BUFFER, m_textureCoords.size() * 2 * sizeof(GLfloat), m_textureCoords.data(), GL_STATIC_DRAW);
     m_textureCoordLoc = glGetAttribLocation(m_programId, "in_texCoords");
-    glVertexAttribPointer(m_textureCoordLoc, 2, GL_FLOAT, GL_FALSE, 0, (void *) 0);
+    glVertexAttribPointer(m_textureCoordLoc, 2, GL_FLOAT, GL_FALSE, 0, nullptr);
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
