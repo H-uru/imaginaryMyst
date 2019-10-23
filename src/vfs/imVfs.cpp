@@ -48,14 +48,14 @@
         return _wstat(path.to_wchar().data(), &stbuf) == 0;
     }
 
-    static imVfsEntry* find_files(const ST::string& path)
+    static std::shared_ptr<imVfsEntry> find_files(const ST::string& path)
     {
         WIN32_FIND_DATAW fd;
         HANDLE hList = FindFirstFileW(path.to_wchar().data(), &fd);
         if (hList == 0)
             return 0;
 
-        std::list<imRef<imVfsEntry> > children;
+        std::vector<std::shared_ptr<imVfsEntry>> children;
         do {
             if (wcscmp(fd.cFileName, L".") == 0 || wcscmp(fd.cFileName, L"..") == 0)
                 continue;
@@ -65,13 +65,14 @@
             } else {
                 // Add regular files
                 children.push_back(
-                    new imVfsFileEntry(fd.cFileName, imVfsEntry::Type_File,
-                                       fd.nFileSizeLow, path + "\\" + fd.cFileName)
+                    std::make_shared<imVfsFileEntry>(fd.cFileName,
+                            imVfsEntry::Type_File, fd.nFileSizeLow,
+                            path + "\\" + fd.cFileName)
                 );
             }
         } while (FindNextFileW(hList, &fd));
         FindClose(hList);
-        return new imVfsDirEntry(path_filename(path), children);
+        return std::make_shared<imVfsDirEntry>(path_filename(path), children);
     }
 
 #else
@@ -103,14 +104,15 @@
         return stat(path.c_str(), &stbuf) == 0;
     }
 
-    static imVfsEntry* find_files(const ST::string& path)
+    static std::shared_ptr<imVfsEntry> find_files(const ST::string& path)
     {
         dirent** des;
         int count = scandir(path.c_str(), &des, 0, 0);
         if (count < 0)
             return 0;
 
-        std::list<imRef<imVfsEntry> > children;
+        std::vector<std::shared_ptr<imVfsEntry>> children;
+        children.reserve(static_cast<size_t>(count));
         for (int i=0; i<count; ++i) {
             if (strcmp(des[i]->d_name, ".") == 0 || strcmp(des[i]->d_name, "..") == 0) {
                 // Ignore these entries
@@ -123,8 +125,8 @@
                 const ST::string file_path = path + "/" + des[i]->d_name;
                 if (stat(file_path.c_str(), &fs) == 0) {
                     children.push_back(
-                        new imVfsFileEntry(des[i]->d_name, imVfsEntry::Type_File,
-                                           fs.st_size, file_path)
+                        std::make_shared<imVfsFileEntry>(des[i]->d_name,
+                                imVfsEntry::Type_File,fs.st_size, file_path)
                     );
                 } else {
                     // TODO: Don't fail silently!
@@ -133,7 +135,7 @@
             free(des[i]);
         }
         free(des);
-        return new imVfsDirEntry(path_filename(path), children);
+        return std::make_shared<imVfsDirEntry>(path_filename(path), children);
     }
 
 #endif
@@ -141,42 +143,37 @@
 
 
 /* imVfsDirEntry */
-std::list<imRef<imVfsEntry> > imVfsDirEntry::children() const
+std::vector<std::shared_ptr<imVfsEntry>> imVfsDirEntry::children() const
 {
-    std::list<imRef<imVfsEntry> > childList;
-    std::map<ST::string, imRef<imVfsEntry> >::const_iterator it;
-    for (it = m_children.begin(); it != m_children.end(); ++it)
-        childList.push_back(it->second);
-    return childList;
+    std::vector<std::shared_ptr<imVfsEntry>> result;
+    result.reserve(m_children.size());
+    for (const auto& child : m_children)
+        result.push_back(child.second);
+    return result;
 }
 
-imRef<imVfsEntry> imVfsDirEntry::get(const ST::string& name) const
+std::shared_ptr<imVfsEntry> imVfsDirEntry::get(const ST::string& name) const
 {
-    const ST::string lowerName = name.to_lower();
-    std::map<ST::string, imRef<imVfsEntry> >::const_iterator f;
-    f = m_children.find(lowerName);
+    auto f = m_children.find(name);
     if (f == m_children.end())
-        return 0;
+        return nullptr;
     return f->second;
 }
 
-void imVfsDirEntry::add(const std::list<imRef<imVfsEntry> >& children)
+void imVfsDirEntry::add(const std::vector<std::shared_ptr<imVfsEntry>>& children)
 {
-    std::list<imRef<imVfsEntry> >::const_iterator it;
-    for (it = children.begin(); it != children.end(); ++it) {
-        const ST::string ipath = (*it)->name().to_lower();
-        std::map<ST::string, imRef<imVfsEntry> >::iterator f;
-        f = m_children.find(ipath);
+    for (const auto &child : children) {
+        auto f = m_children.find(child->name());
         if (f == m_children.end()) {
-            m_children[ipath] = *it;
-        } else if (f->second->isDirectory() && (*it)->isDirectory()) {
+            m_children[child->name()] = child;
+        } else if (f->second->isDirectory() && child->isDirectory()) {
             // Merge the contents of the directory with the new location
-            f->second.cast<imVfsDirEntry>()->add(
-                it->cast<imVfsDirEntry>()->children()
+            std::static_pointer_cast<imVfsDirEntry>(f->second)->add(
+                std::static_pointer_cast<imVfsDirEntry>(child)->children()
             );
         } else {
-            imLog("WARN: Duplicate VFS entry '{}'", ipath);
-            m_children[ipath] = *it;
+            imLog("WARN: Duplicate VFS entry '{}'", child->name());
+            m_children[child->name()] = child;
         }
     }
 }
@@ -185,22 +182,20 @@ void imVfsDirEntry::add(const std::list<imRef<imVfsEntry> >& children)
 /* imVfs */
 imVfs::~imVfs()
 {
-    std::map<ST::string, imStream*>::iterator it;
-    for (it = m_dniStreams.begin(); it != m_dniStreams.end(); ++it)
-        delete it->second;
+    for (const auto &it : m_dniStreams)
+        delete it.second;
 }
 
 void imVfs::addPhysicalPath(const ST::string& path)
 {
-    imRef<imVfsEntry> dir = find_files(path);
-    if (dir == 0)
+    std::shared_ptr<imVfsEntry> dir = find_files(path);
+    if (!dir)
         return;
 
     if (dir->isDirectory()) {
-        m_root->add(dir.cast<imVfsDirEntry>()->children());
+        m_root->add(std::static_pointer_cast<imVfsDirEntry>(dir)->children());
     } else {
-        std::list<imRef<imVfsEntry> > file;
-        file.push_back(dir);
+        std::vector<std::shared_ptr<imVfsEntry>> file = {dir};
         m_root->add(file);
     }
 }
@@ -208,26 +203,21 @@ void imVfs::addPhysicalPath(const ST::string& path)
 void imVfs::addDniFile(const ST::string& filename)
 {
     const ST::string location = path_filename(filename);
-    imFileStream* stream = new imFileStream();
-    if (!stream->open(filename, "rb")) {
-        delete stream;
+    std::unique_ptr<imFileStream> stream(new imFileStream);
+    if (!stream->open(filename, "rb"))
         return;
-    }
 
-    imRef<imVfsEntry> dir = read_dnifile(stream, location);
-    if (dir == 0) {
-        delete stream;
+    std::shared_ptr<imVfsEntry> dir = read_dnifile(stream.get(), location);
+    if (!dir)
         return;
-    }
 
     if (dir->isDirectory()) {
-        m_root->add(dir.cast<imVfsDirEntry>()->children());
+        m_root->add(std::static_pointer_cast<imVfsDirEntry>(dir)->children());
     } else {
-        std::list<imRef<imVfsEntry> > file;
-        file.push_back(dir);
+        std::vector<std::shared_ptr<imVfsEntry>> file = {dir};
         m_root->add(file);
     }
-    m_dniStreams[location] = stream;
+    m_dniStreams[location] = stream.release();
 }
 
 static void print_recur(imVfsEntry* ent, int tab)
@@ -236,9 +226,9 @@ static void print_recur(imVfsEntry* ent, int tab)
         printf("    ");
     if (ent->isDirectory()) {
         ST::printf("[{}]\n", ent->name());
-        std::list<imRef<imVfsEntry> > children = ((imVfsDirEntry*)ent)->children();
-        for (std::list<imRef<imVfsEntry> >::iterator it = children.begin(); it != children.end(); ++it)
-            print_recur(*it, tab + 1);
+        const auto& children = static_cast<imVfsDirEntry*>(ent)->children();
+        for (const auto& child : children)
+            print_recur(child.get(), tab + 1);
     } else {
         ST::printf("{}\n", ent->name());
     }
@@ -246,61 +236,57 @@ static void print_recur(imVfsEntry* ent, int tab)
 
 void imVfs::debug_print()
 {
-    print_recur(m_root, 0);
+    print_recur(m_root.get(), 0);
 }
 
 imStream* imVfs::open(const ST::string& path)
 {
-    if (!(path[0] == '/'))
-        return 0;
+    if (path[0] != '/')
+        return nullptr;
     ST::string open_path = path.substr(1);
 
-    imRef<imVfsDirEntry> dir = m_root;
+    auto dir = m_root;
     do {
-        if (dir == 0 || !dir->isDirectory())
-            return 0;
+        if (!dir || !dir->isDirectory())
+            return nullptr;
 
         ST_ssize_t split = open_path.find('/');
         if (split == -1) {
             // Last path item, this should be what we want
-            imRef<imVfsFileEntry> entry = dir->get(open_path).convert<imVfsFileEntry>();
-            if (entry == 0)
-                return 0;
+            auto entry = std::static_pointer_cast<imVfsFileEntry>(dir->get(open_path));
+            if (!entry)
+                return nullptr;
 
             if (entry->type() == imVfsEntry::Type_File) {
                 imFileStream* stream = new imFileStream();
                 if (stream->open(entry->location(), "rb"))
                     return stream;
                 delete stream;
-                return 0;
+                return nullptr;
             } else if (entry->type() == imVfsEntry::Type_VFile) {
                 imStream* dni = m_dniStreams[entry->location()];
                 dni->seek(entry->voffset());
-                unsigned char* buffer = new unsigned char[entry->size()];
+                std::unique_ptr<unsigned char[]> buffer(new unsigned char[entry->size()]);
                 if (entry->isCompressed()) {
-                    unsigned char* zbuf = new unsigned char[entry->csize()];
-                    dni->read(zbuf, entry->csize());
+                    std::unique_ptr<unsigned char[]> zbuf(new unsigned char[entry->csize()]);
+                    dni->read(zbuf.get(), entry->csize());
                     uLongf bufLen = entry->size();
-                    if (uncompress(buffer, &bufLen, zbuf, entry->csize()) != Z_OK) {
-                        delete[] buffer;
-                        delete[] zbuf;
-                        return 0;
-                    }
-                    delete[] zbuf;
+                    if (uncompress(buffer.get(), &bufLen, zbuf.get(), entry->csize()) != Z_OK)
+                        return nullptr;
                 } else {
-                    dni->read(buffer, entry->size());
+                    dni->read(buffer.get(), entry->size());
                 }
-                return new imBufferStream(buffer, entry->size(), true);
+                return new imBufferStream(buffer.release(), entry->size(), true);
             } else {
                 // Can't read from a directory
-                return 0;
+                return nullptr;
             }
         } else {
             // Directory along our way
             ST::string subdir = open_path.left(split);
             open_path = open_path.substr(split + 1);
-            dir = dir->get(subdir).convert<imVfsDirEntry>();
+            dir = std::static_pointer_cast<imVfsDirEntry>(dir->get(subdir));
         }
     } while (!open_path.empty());
-    return 0;
+    return nullptr;
 }

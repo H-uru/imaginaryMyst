@@ -18,12 +18,12 @@
 #define _IM_VFS_H
 
 #include "imStream.h"
-#include "imRef.h"
 #include <string_theory/format>
 #include <map>
-#include <list>
+#include <vector>
+#include <memory>
 
-class imVfsEntry : public imDataRef {
+class imVfsEntry {
 public:
     enum VfsType {
         Type_Directory, Type_File, Type_VFile,
@@ -33,12 +33,11 @@ public:
     };
 
 public:
-    imVfsEntry(const ST::string& name, VfsType type)
-    : m_name(name), m_type(type)
+    imVfsEntry(ST::string name, VfsType type)
+        : m_name(std::move(name)), m_type(type)
     { }
 
-    virtual ~imVfsEntry()
-    { }
+    virtual ~imVfsEntry() { }
 
     bool isDirectory() const
     {
@@ -66,47 +65,41 @@ private:
 class imVfsDirEntry : public imVfsEntry {
 public:
     imVfsDirEntry()
-    : imVfsEntry(ST::null, Type_Directory)
+        : imVfsEntry(ST::null, Type_Directory)
     { }
 
-    imVfsDirEntry(const ST::string& name, const std::list<imRef<imVfsEntry> >& children)
-    : imVfsEntry(name, Type_Directory)
+    imVfsDirEntry(ST::string name, const std::vector<std::shared_ptr<imVfsEntry>>& children)
+        : imVfsEntry(std::move(name), Type_Directory)
     {
         add(children);
     }
 
-    virtual ~imVfsDirEntry()
-    { }
+    std::vector<std::shared_ptr<imVfsEntry>> children() const;
+    std::shared_ptr<imVfsEntry> get(const ST::string& name) const;
 
-    std::list<imRef<imVfsEntry> > children() const;
-    imRef<imVfsEntry> get(const ST::string& name) const;
-
-    void add(const std::list<imRef<imVfsEntry> >& children);
+    void add(const std::vector<std::shared_ptr<imVfsEntry>>& children);
 
 private:
     // Map these by the entry name for faster lookups
-    std::map<ST::string, imRef<imVfsEntry> > m_children;
+    std::map<ST::string, std::shared_ptr<imVfsEntry>, ST::less_i> m_children;
 };
 
 
 class imVfsFileEntry : public imVfsEntry {
 public:
-    imVfsFileEntry(const ST::string& name, VfsType type, size_t size, const ST::string& location)
-    : imVfsEntry(name, type), m_vext(0), m_voffset(0), m_size(size),
-      m_csize(0), m_location(location)
+    imVfsFileEntry(ST::string name, VfsType type, size_t size, ST::string location)
+        : imVfsEntry(std::move(name), type), m_vext(), m_voffset(), m_size(size),
+          m_csize(), m_location(std::move(location))
     { }
 
-    imVfsFileEntry(const ST::string& name, VfsType type, unsigned int vext,
-                   size_t offset, size_t size, size_t csize, const ST::string& location)
-    : imVfsEntry(name, type), m_vext(vext), m_voffset(offset),
-      m_size(size), m_csize(csize), m_location(location)
+    imVfsFileEntry(ST::string name, VfsType type, unsigned int vext,
+                   size_t offset, size_t size, size_t csize, ST::string location)
+        : imVfsEntry(std::move(name), type), m_vext(vext), m_voffset(offset),
+          m_size(size), m_csize(csize), m_location(std::move(location))
     {
         if (m_csize != 0)
             setCompressed();
     }
-
-    virtual ~imVfsFileEntry()
-    { }
 
     unsigned int vext() const
     { return m_vext; }
@@ -134,11 +127,7 @@ private:
 
 class imVfs {
 public:
-    imVfs()
-    {
-        m_root = new imVfsDirEntry();
-    }
-
+    imVfs() : m_root(std::make_shared<imVfsDirEntry>()) { }
     ~imVfs();
 
     void addPhysicalPath(const ST::string& path);
@@ -158,7 +147,7 @@ public:
     }
 
 private:
-    imRef<imVfsDirEntry> m_root;
+    std::shared_ptr<imVfsDirEntry> m_root;
     std::map<ST::string, imStream*> m_dniStreams;
 };
 
@@ -167,6 +156,6 @@ ST::string path_filename(const ST::string& path);
 ST::string path_pathname(const ST::string& path);
 bool file_exists(const ST::string& path);
 
-imVfsEntry* read_dnifile(imStream* stream, const ST::string& location);
+std::shared_ptr<imVfsEntry> read_dnifile(imStream* stream, const ST::string& location);
 
 #endif

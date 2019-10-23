@@ -18,15 +18,10 @@
 #define _IM_SOUNDSOURCE_H
 
 #include "imKeyList.h"
-#include "imRef.h"
 
-class imSoundSource : public imDataRef {
+class imSoundSource {
 public:
-    imSoundSource()
-    { }
-
-    ~imSoundSource()
-    { }
+    imSoundSource() { }
 
     bool read(imStream* stream);
 

@@ -94,14 +94,14 @@ public:
 
 class imBufferStream : public imStream {
 public:
-    imBufferStream(const unsigned char* buffer, size_t size, bool canDelete)
-    : m_buffer(buffer), m_ptr(buffer), m_end(buffer + size),
-      m_canDelete(canDelete)
+    imBufferStream(const unsigned char* buffer, size_t size, bool owned)
+        : m_buffer(buffer), m_ptr(buffer), m_end(buffer + size),
+          m_owned(owned)
     { }
 
     virtual ~imBufferStream()
     {
-        if (m_canDelete)
+        if (m_owned)
             delete[] m_buffer;
     }
 
@@ -133,7 +133,7 @@ private:
     const unsigned char* m_buffer;
     const unsigned char* m_ptr;
     const unsigned char* m_end;
-    bool m_canDelete;
+    bool m_owned;
 };
 
 

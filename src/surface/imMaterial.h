@@ -21,11 +21,9 @@
 #include "imLayer.h"
 #include "imKeyList.h"
 
-class imMaterial : public imDataRef {
+class imMaterial {
 public:
-    imMaterial() : m_readFlags(0)
-    { }
-
+    imMaterial() : m_readFlags() { }
     ~imMaterial();
 
     bool read(imStream* stream, class imSceneIndex* idx);
