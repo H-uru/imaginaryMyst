@@ -31,3 +31,25 @@ jobs:
           cmake -DCMAKE_BUILD_TYPE=Debug \
             -DCMAKE_PREFIX_PATH="${GITHUB_WORKSPACE}/build_deps/prefix" ..
           make -j2
+
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v1
+      - name: Install dependencies
+        shell: powershell
+        run: |
+          Set-Location "${Env:VCPKG_INSTALLATION_ROOT}"
+          Set-Content -Path triplets/x86-windows-static-dyncrt.cmake `
+            -Value "set(VCPKG_TARGET_ARCHITECTURE x86)`nset(VCPKG_CRT_LINKAGE dynamic)`nset(VCPKG_LIBRARY_LINKAGE static)`n"
+          git pull
+          vcpkg install sdl2[core] glm zlib string-theory --triplet x86-windows-static-dyncrt
+      - name: Build imaginaryMyst
+        shell: powershell
+        run: |
+          mkdir build | Out-Null
+          cd build
+          cmake -G "Visual Studio 16 2019" -A Win32 -DCMAKE_BUILD_TYPE=Debug `
+            -DCMAKE_TOOLCHAIN_FILE="${Env:VCPKG_INSTALLATION_ROOT}/scripts/buildsystems/vcpkg.cmake" `
+            -DVCPKG_TARGET_TRIPLET=x86-windows-static-dyncrt ..
+          cmake --build .

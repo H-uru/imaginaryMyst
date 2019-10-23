@@ -43,9 +43,8 @@ set_package_properties(SDL2 PROPERTIES
     TYPE REQUIRED
 )
 if(SDL2_FOUND AND TARGET SDL2::SDL2)
-    # Map the CMake-style export targets to the classic variables
-    # used by the autotools-generated CMake configuration.
-    get_target_property(SDL2_INCLUDE_DIRS SDL2::SDL2 INTERFACE_INCLUDE_DIRECTORIES)
+    # The CMake-style export target automatically configures include
+    # directories, linker flags, etc for us
     set(SDL2_LIBRARIES SDL2::SDL2 SDL2::SDL2main)
 else()
     # The autotools-generated cmake file may contain trailing whitespace,
@@ -79,7 +78,9 @@ feature_summary(WHAT ALL FATAL_ON_MISSING_REQUIRED_PACKAGES)
 include_directories(${GLEW_INCLUDE_DIR})
 include_directories(${OPENGL_INCLUDE_DIR})
 include_directories(${GLM_INCLUDE_DIRS})
-include_directories(${SDL2_INCLUDE_DIRS})
+if(SDL2_INCLUDE_DIRS)
+    include_directories(${SDL2_INCLUDE_DIRS})
+endif()
 include_directories(${ZLIB_INCLUDE_DIR})
 
 # 3rd party Squish library for DXT codecs
