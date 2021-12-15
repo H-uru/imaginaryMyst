@@ -65,7 +65,7 @@ private:
 class imVfsDirEntry : public imVfsEntry {
 public:
     imVfsDirEntry()
-        : imVfsEntry(ST::null, Type_Directory)
+        : imVfsEntry({}, Type_Directory)
     { }
 
     imVfsDirEntry(ST::string name, const std::vector<std::shared_ptr<imVfsEntry>>& children)
