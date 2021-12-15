@@ -13,7 +13,7 @@
 # You should have received a copy of the GNU General Public License
 # along with imaginaryMyst.  If not, see <http://www.gnu.org/licenses/>.
 
-cmake_minimum_required(VERSION 3.0)
+cmake_minimum_required(VERSION 3.1)
 project(imaginaryMyst LANGUAGES CXX)
 
 include(FeatureSummary)
@@ -22,8 +22,11 @@ set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 option(ENABLE_SSE2 "Build with SSE2 SIMD instructions" ON)
 
+set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
+
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES ".*Clang")
-    set(CMAKE_CXX_FLAGS "-std=c++11 ${CMAKE_CXX_FLAGS}")
     set(CMAKE_CXX_FLAGS "-Wno-unused-parameter -Werror ${CMAKE_CXX_FLAGS}")
     if(ENABLE_SSE2)
         set(CMAKE_CXX_FLAGS "-msse2 ${CMAKE_CXX_FLAGS}")
