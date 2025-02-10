@@ -20,17 +20,12 @@ include(FeatureSummary)
 
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
-option(ENABLE_SSE2 "Build with SSE2 SIMD instructions" ON)
-
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES ".*Clang")
     set(CMAKE_CXX_FLAGS "-Wno-unused-parameter -Werror ${CMAKE_CXX_FLAGS}")
-    if(ENABLE_SSE2)
-        set(CMAKE_CXX_FLAGS "-msse2 ${CMAKE_CXX_FLAGS}")
-    endif()
 endif()
 
 find_package(OpenGL REQUIRED)
