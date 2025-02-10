@@ -13,10 +13,10 @@ jobs:
         if: contains(matrix.os, 'ubuntu')
         run: |
           sudo apt update
-          sudo apt install libsdl2-dev libglm-dev
+          sudo apt install libsdl2-dev libglm-dev libsquish-dev
       - name: Install dependencies (macOS)
         if: contains(matrix.os, 'macOS')
-        run: brew install sdl2 glm
+        run: brew install sdl2 glm libsquish
       - name: Build string_theory
         run: |
           mkdir -p build_deps && cd build_deps
@@ -43,7 +43,7 @@ jobs:
           Set-Content -Path triplets/x86-windows-static-dyncrt.cmake `
             -Value "set(VCPKG_TARGET_ARCHITECTURE x86)`nset(VCPKG_CRT_LINKAGE dynamic)`nset(VCPKG_LIBRARY_LINKAGE static)`n"
           git pull
-          vcpkg install sdl2[core] glm zlib string-theory --triplet x86-windows-static-dyncrt
+          vcpkg install sdl2[core] glm zlib string-theory libsquish --triplet x86-windows-static-dyncrt
       - name: Build imaginaryMyst
         shell: powershell
         run: |
